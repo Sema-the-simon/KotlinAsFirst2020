@@ -117,12 +117,12 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int =
-    if ((kingX == rookX1) || (kingY == rookY1))
-        if ((kingX == rookX2) || (kingY == rookY2)) 3
-        else 1
-    else
-        if ((kingX == rookX2) || (kingY == rookY2)) 2
-        else 0
+    when {
+        ((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 3
+        ((kingX == rookX2) || (kingY == rookY2)) -> 2
+        ((kingX == rookX1) || (kingY == rookY1)) -> 1
+        else -> 0
+    }
 
 /**
  * Простая (2 балла)
@@ -141,12 +141,12 @@ fun rookOrBishopThreatens(
 ): Int {
     val coordinateDifferenceX = abs(kingX - bishopX)
     val coordinateDifferenceY = abs(kingY - bishopY)
-    return if ((kingX == rookX) || (kingY == rookY))
-        if (coordinateDifferenceX != coordinateDifferenceY) 1
-        else 3
-    else
-        if (coordinateDifferenceX != coordinateDifferenceY) 0
-        else 2
+    return when{
+        ((kingX == rookX) || (kingY == rookY)) && (coordinateDifferenceX != coordinateDifferenceY) -> 1
+        ((kingX == rookX) || (kingY == rookY)) -> 3
+        (coordinateDifferenceX != coordinateDifferenceY) ->0
+        else -> 2
+    }
 }
 
 /**
