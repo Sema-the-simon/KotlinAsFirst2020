@@ -3,9 +3,7 @@
 package lesson2.task1
 
 import lesson1.task1.*
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.sqrt
+import kotlin.math.*
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -118,14 +116,13 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int {
-    return when {
-        ((kingX == rookX1) || (kingY == rookY1)) && ((kingX != rookX2) && (kingY != rookY2)) -> 1
-        ((kingX != rookX1) && (kingY != rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 2
-        ((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 3
-        else -> 0
-    }
-}
+): Int =
+    if ((kingX == rookX1) || (kingY == rookY1))
+        if ((kingX == rookX2) || (kingY == rookY2)) 3
+        else 1
+    else
+        if ((kingX == rookX2) || (kingY == rookY2)) 2
+        else 0
 
 /**
  * Простая (2 балла)
@@ -142,15 +139,14 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    val coordinateDifferenceX = kingX - bishopX
-    val coordinateDifferenceY = kingY - bishopY
-    return when {
-        ((kingX == rookX) || (kingY == rookY)) && (abs(coordinateDifferenceX) != abs(coordinateDifferenceY)) -> 1
-        ((kingX != rookX) && (kingY != rookY)) && (abs(coordinateDifferenceX) == abs(coordinateDifferenceY)) -> 2
-        ((kingX == rookX) || (kingY == rookY)) && (abs(coordinateDifferenceX) == abs(coordinateDifferenceY)) -> 3
-        else -> 0
-
-    }
+    val coordinateDifferenceX = abs(kingX - bishopX)
+    val coordinateDifferenceY = abs(kingY - bishopY)
+    return if ((kingX == rookX) || (kingY == rookY))
+        if (coordinateDifferenceX != coordinateDifferenceY) 1
+        else 3
+    else
+        if (coordinateDifferenceX != coordinateDifferenceY) 0
+        else 2
 }
 
 /**
@@ -162,26 +158,14 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val biggestSide: Double
-    val side1: Double
-    val side2: Double
-    if (a > b)
-        if (a > c) {
-            biggestSide = a; side1 = b; side2 = c
-        } else {
-            biggestSide = c; side1 = b; side2 = a
-        }
-    else
-        if (b > c) {
-            biggestSide = b; side1 = a; side2 = c
-        } else {
-            biggestSide = c; side1 = b; side2 = a
-        }
-    return if (biggestSide > side1 + side2) -1
+    val biggestSide = max(a, max(b, c))
+    val smallestSide = min(a, min(b, c))
+    val middleSide = a + b + c - biggestSide - smallestSide
+    return if (biggestSide > middleSide + smallestSide) -1
     else
         return when {
-            sqr(biggestSide) == sqr(side1) + sqr(side2) -> 1
-            sqr(biggestSide) < sqr(side1) + sqr(side2) -> 0
+            sqr(biggestSide) == sqr(middleSide) + sqr(smallestSide) -> 1
+            sqr(biggestSide) < sqr(middleSide) + sqr(smallestSide) -> 0
             else -> 2
         }
 }
@@ -195,12 +179,10 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    return when {
-        (d >= b) && (c >= a) && (c <= b) -> b - c
-        (d >= b) && (c < a) -> b - a
-        (d < b) && (c >= a) -> d - c
-        (d <= b) && (c <= a) && (d >= a) -> d - a
-        else -> -1
-    }
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
+    (d >= b) && (c >= a) && (c <= b) -> b - c
+    (d >= b) && (c < a) -> b - a
+    (d < b) && (c >= a) -> d - c
+    (d <= b) && (c <= a) && (d >= a) -> d - a
+    else -> -1
 }
