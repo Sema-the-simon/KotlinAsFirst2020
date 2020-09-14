@@ -4,6 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.*
 import kotlin.math.*
+import kotlin.comparisons.*
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -141,10 +142,10 @@ fun rookOrBishopThreatens(
 ): Int {
     val coordinateDifferenceX = abs(kingX - bishopX)
     val coordinateDifferenceY = abs(kingY - bishopY)
-    return when{
+    return when {
         ((kingX == rookX) || (kingY == rookY)) && (coordinateDifferenceX != coordinateDifferenceY) -> 1
         ((kingX == rookX) || (kingY == rookY)) -> 3
-        (coordinateDifferenceX != coordinateDifferenceY) ->0
+        (coordinateDifferenceX != coordinateDifferenceY) -> 0
         else -> 2
     }
 }
@@ -158,8 +159,8 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val biggestSide = max(a, max(b, c))
-    val smallestSide = min(a, min(b, c))
+    val biggestSide = maxOf(a, b, c)
+    val smallestSide = minOf(a, b, c)
     val middleSide = a + b + c - biggestSide - smallestSide
     return if (biggestSide > middleSide + smallestSide) -1
     else
@@ -169,7 +170,6 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
             else -> 2
         }
 }
-
 
 /**
  * Средняя (3 балла)
