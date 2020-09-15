@@ -39,7 +39,14 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
  * Дан номер месяца (от 1 до 12 включительно) и год (положительный).
  * Вернуть число дней в этом месяце этого года по григорианскому календарю.
  */
-fun daysInMonth(month: Int, year: Int): Int = TODO()
+fun daysInMonth(month: Int, year: Int): Int {
+    return when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        else -> if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) 29
+        else 28
+    }
+}
 
 /**
  * Простая (2 балла)
@@ -48,10 +55,11 @@ fun daysInMonth(month: Int, year: Int): Int = TODO()
  * окружности с центром в (x2, y2) и радиусом r2.
  * Вернуть true, если утверждение верно
  */
+
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean = TODO()
+): Boolean = sqr(x2 - x1) + sqr(y2 - y1) <= sqr(r2 - r1) && r2 >= r1
 
 /**
  * Средняя (3 балла)
@@ -62,4 +70,10 @@ fun circleInside(
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean = TODO()
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
+    val minSideBrick = minOf(a, b, c)
+    val middleSideBrick = a + b + c - minSideBrick - maxOf(a, b, c)
+    val minSideHole = min(r, s)
+    val maxSideHole = max(r, s)
+    return minSideBrick <= minSideHole && middleSideBrick <= maxSideHole
+}
