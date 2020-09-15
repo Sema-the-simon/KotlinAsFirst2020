@@ -143,10 +143,10 @@ fun rookOrBishopThreatens(
     val coordinateDifferenceX = abs(kingX - bishopX)
     val coordinateDifferenceY = abs(kingY - bishopY)
     return when {
-        ((kingX == rookX) || (kingY == rookY)) && (coordinateDifferenceX != coordinateDifferenceY) -> 1
-        ((kingX == rookX) || (kingY == rookY)) -> 3
-        (coordinateDifferenceX != coordinateDifferenceY) -> 0
-        else -> 2
+        (kingX == rookX) || (kingY == rookY) && coordinateDifferenceX == coordinateDifferenceY -> 3
+        ((kingX == rookX) || (kingY == rookY)) -> 1
+        (coordinateDifferenceX == coordinateDifferenceY) -> 2
+        else -> 0
     }
 }
 
@@ -164,7 +164,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val middleSide = a + b + c - biggestSide - smallestSide
     return if (biggestSide > middleSide + smallestSide) -1
     else
-        return when {
+        when {
             sqr(biggestSide) == sqr(middleSide) + sqr(smallestSide) -> 1
             sqr(biggestSide) < sqr(middleSide) + sqr(smallestSide) -> 0
             else -> 2
