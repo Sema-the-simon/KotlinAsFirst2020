@@ -143,7 +143,7 @@ fun rookOrBishopThreatens(
     val coordinateDifferenceX = abs(kingX - bishopX)
     val coordinateDifferenceY = abs(kingY - bishopY)
     return when {
-        (kingX == rookX) || (kingY == rookY) && coordinateDifferenceX == coordinateDifferenceY -> 3
+        ((kingX == rookX) || (kingY == rookY)) && coordinateDifferenceX == coordinateDifferenceY -> 3
         ((kingX == rookX) || (kingY == rookY)) -> 1
         (coordinateDifferenceX == coordinateDifferenceY) -> 2
         else -> 0
