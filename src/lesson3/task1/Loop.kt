@@ -2,6 +2,7 @@
 
 package lesson3.task1
 
+import lesson1.task1.sqr
 import kotlin.math.*
 
 // Урок 3: циклы
@@ -37,7 +38,7 @@ fun isPrime(n: Int): Boolean {
     return true
 }
 
-/**.
+/**
  * Пример
  *
  * Проверка числа на совершенность -- результат true, если число совершенное
@@ -273,7 +274,56 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var number = 1
+    var squareNumber: Int
+    var rNumber: Int
+    var mod = number % 10
+    var count = 1
+    while (n != count) {
+        number++
+        squareNumber = sqr(number)
+        if (squareNumber % 10 == 0) {
+            squareNumber = squareNumber * 10 + 1
+            rNumber = revert(squareNumber)
+            while (rNumber > 1 && count != n) {
+                mod = rNumber % 10
+                rNumber /= 10
+                count++
+            }
+        } else {
+            rNumber = revert(squareNumber)
+            while (rNumber > 0 && count != n) {
+                mod = rNumber % 10
+                rNumber /= 10
+                count++
+            }
+        }
+    }
+    return mod
+}
+/*{   var number = 1
+       var squareNumber = sqr(number)
+       var div = 1
+       var count = 1
+       var countDigit = 0
+       while (n != count) {
+           number++
+           squareNumber = sqr(number)
+           while (squareNumber > 0) {
+               countDigit++
+               squareNumber /= 10
+           }
+           squareNumber = sqr(number)
+           while (squareNumber > 0 && count != n) {
+               div = (squareNumber / 10.0.pow(countDigit - 1)).toInt()
+               squareNumber %= 10.0.pow(countDigit - 1).toInt()
+               count++
+               countDigit--
+           }
+       }
+       return div
+   }*/ // Альтернативное решение
 
 /**
  * Сложная (5 баллов)
@@ -284,4 +334,26 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var number = 1
+    var fibNumber: Int
+    var div = 1
+    var count = 1
+    var countDigit = 0
+    while (n != count) {
+        number++
+        fibNumber = fib(number)
+        while (fibNumber > 0) {
+            countDigit++
+            fibNumber /= 10
+        }
+        fibNumber = fib(number)
+        while (fibNumber > 0 && count != n) {
+            div = (fibNumber / 10.0.pow(countDigit - 1)).toInt()
+            fibNumber %= 10.0.pow(countDigit - 1).toInt()
+            count++
+            countDigit--
+        }
+    }
+    return div
+}
