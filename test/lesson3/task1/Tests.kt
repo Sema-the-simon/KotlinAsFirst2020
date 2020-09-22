@@ -67,7 +67,7 @@ class Tests {
     fun digitNumber() {
         assertEquals(1, digitNumber(0))
         assertEquals(1, digitNumber(7))
-        assertEquals(2, digitNumber(10))
+        assertEquals(2, digitNumber(17))
         assertEquals(2, digitNumber(99))
         assertEquals(3, digitNumber(123))
         assertEquals(10, digitNumber(Int.MAX_VALUE))
@@ -161,6 +161,7 @@ class Tests {
     @Tag("3")
     fun squareBetweenExists() {
         assertTrue(squareBetweenExists(1, 1))
+        assertTrue(squareBetweenExists(0, 0))
         assertTrue(squareBetweenExists(21, 28))
         assertTrue(squareBetweenExists(36, 48))
         assertTrue(squareBetweenExists(50, 64))
@@ -198,7 +199,7 @@ class Tests {
         assertTrue(hasDifferentDigits(323))
         assertTrue(hasDifferentDigits(54))
         assertTrue(hasDifferentDigits(222266666))
-        assertFalse(hasDifferentDigits(0))
+        assertFalse(hasDifferentDigits(1))
         assertFalse(hasDifferentDigits(777))
         assertTrue(hasDifferentDigits(31122))
     }
@@ -236,6 +237,7 @@ class Tests {
         assertEquals(6, squareSequenceDigit(12))
         assertEquals(0, squareSequenceDigit(17))
         assertEquals(9, squareSequenceDigit(27))
+        assertEquals(6, squareSequenceDigit( 217007))
     }
 
     @Test

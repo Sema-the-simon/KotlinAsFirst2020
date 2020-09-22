@@ -74,13 +74,8 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var count = 0
-    var number = n
-    do {
-        count++
-        number /= 10
-    } while ((number > 0))
-    return count
+    return if (n < 10) 1
+    else digitNumber(n / 10) + digitNumber(n % 10)
 }
 
 /**
@@ -89,9 +84,17 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int =
-    if (n < 3) 1
-    else fib(n - 1) + fib(n - 2)
+fun fib(n: Int): Int {
+    var fibF = 1
+    var fibS = 1
+    var t: Int
+    for (i in 3..n) {
+        t = fibS
+        fibS += fibF
+        fibF = t
+    }
+    return fibS
+}
 
 /**
  * Простая (2 балла)
@@ -99,15 +102,12 @@ fun fib(n: Int): Int =
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var d = 2
-    if (n % d == 0) return 2
-    for (i in 3..n step 2) {
-        if (n % i == 0) {
-            d = i
-            break
-        }
+    if (n % 2 == 0) return 2
+    for (i in 3..sqrt(n.toDouble()).toInt() step 2) {
+        if (n % i == 0)
+            return i
     }
-    return d
+    return n
 }
 
 /**
@@ -186,7 +186,7 @@ fun lcm(m: Int, n: Int): Int = m * n / greatestCommonFactor(m, n)
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    for (i in 1..sqrt(n.toDouble()).toInt())
+    for (i in sqrt(m.toDouble()).toInt()..sqrt(n.toDouble()).toInt())
         if ((m <= i * i) && (i * i <= n)) return true
     return false
 }
@@ -201,9 +201,8 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
 fun revert(n: Int): Int {
     var number = n
     var revertNumber = 0
-    var mod: Int
     while (number > 0) {
-        mod = number % 10
+        val mod = number % 10
         revertNumber = revertNumber * 10 + mod
         number /= 10
 
@@ -233,13 +232,13 @@ fun isPalindrome(n: Int): Boolean = revert(n) == n
 fun hasDifferentDigits(n: Int): Boolean {
     var number = n / 10
     var mod = n % 10
-    do {
+    while (number > 0) {
         if (number % 10 != mod) return true
         else {
             mod = number % 10
             number /= 10
         }
-    } while (number > 0)
+    }
     return false
 }
 
@@ -277,53 +276,26 @@ fun cos(x: Double, eps: Double): Double = TODO()
 fun squareSequenceDigit(n: Int): Int {
     var number = 1
     var squareNumber: Int
-    var rNumber: Int
-    var mod = number % 10
+    var div = 1
     var count = 1
+    var countDigit = 0
     while (n != count) {
         number++
         squareNumber = sqr(number)
-        if (squareNumber % 10 == 0) {
-            squareNumber = squareNumber * 10 + 1
-            rNumber = revert(squareNumber)
-            while (rNumber > 1 && count != n) {
-                mod = rNumber % 10
-                rNumber /= 10
-                count++
-            }
-        } else {
-            rNumber = revert(squareNumber)
-            while (rNumber > 0 && count != n) {
-                mod = rNumber % 10
-                rNumber /= 10
-                count++
-            }
+        while (squareNumber > 0) {
+            countDigit++
+            squareNumber /= 10
+        }
+        squareNumber = sqr(number)
+        while (squareNumber > 0 && count != n) {
+            div = (squareNumber / 10.0.pow(countDigit - 1)).toInt()
+            squareNumber %= 10.0.pow(countDigit - 1).toInt()
+            count++
+            countDigit--
         }
     }
-    return mod
+    return div
 }
-/*{   var number = 1
-       var squareNumber = sqr(number)
-       var div = 1
-       var count = 1
-       var countDigit = 0
-       while (n != count) {
-           number++
-           squareNumber = sqr(number)
-           while (squareNumber > 0) {
-               countDigit++
-               squareNumber /= 10
-           }
-           squareNumber = sqr(number)
-           while (squareNumber > 0 && count != n) {
-               div = (squareNumber / 10.0.pow(countDigit - 1)).toInt()
-               squareNumber %= 10.0.pow(countDigit - 1).toInt()
-               count++
-               countDigit--
-           }
-       }
-       return div
-   }*/ // Альтернативное решение
 
 /**
  * Сложная (5 баллов)
