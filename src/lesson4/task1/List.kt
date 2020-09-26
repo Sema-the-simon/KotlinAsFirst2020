@@ -269,7 +269,7 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun fromLatinToInt(char: Char): Int {
-    val latChar = ("0123456789abcdefghigklmnopqrstuvwxyz")
+    val latChar = ("0123456789abcdefghijklmnopqrstuvwxyz")
     return latChar.indexOf(char, 0)
 }
 
