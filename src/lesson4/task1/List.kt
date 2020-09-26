@@ -268,10 +268,16 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
+fun fromLatinToInt(char: Char): Int {
+    val latChar = ("0123456789abcdefghigklmnopqrstuvwxyz")
+    return latChar.indexOf(char, 0)
+}
+
 fun decimalFromString(str: String, base: Int): Int {
     var list = listOf<Int>()
     for (element in str) {
-        list = list + element.toInt()
+        val digit = fromLatinToInt(element)
+        list = list + digit
     }
     return decimal(list, base)
 }
