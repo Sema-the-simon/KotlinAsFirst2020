@@ -140,7 +140,7 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
     val mean = mean(list)
-    if (list.isNotEmpty()) for (i in 0 until list.size) list[i] -= mean
+    for (i in 0 until list.size) list[i] -= mean
     return list
 }
 
@@ -152,11 +152,8 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
 fun times(a: List<Int>, b: List<Int>): Int {
-    var result = 0
-    for (i in 0 until a.size) {
-        result += a[i] * b[i]
-    }
-    return result
+    val result = a.zip(b) { x, y -> x * y }//  var result = 0
+    return result.sum()
 }
 
 /**
@@ -180,11 +177,8 @@ fun polynom(p: List<Int>, x: Int): Int = TODO()
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    var sum = 0
     for (i in 0 until list.size) {
-        val element = list[i]
-        list[i] += sum
-        sum += element
+        list[i] = list.subList(0, i).sum()
     }
     return list
 }
@@ -198,10 +192,9 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     var result = listOf<Int>()
-    var divisor: Int
     var number = n
     while (number != 1) {
-        divisor = minDivisor(number)
+        val divisor = minDivisor(number)
         result = result + divisor
         number /= divisor
     }
@@ -268,15 +261,12 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun fromLatinToInt(char: Char): Int {
-    val latChar = ("0123456789abcdefghijklmnopqrstuvwxyz")
-    return latChar.indexOf(char, 0)
-}
+fun test(str: String) {}
 
 fun decimalFromString(str: String, base: Int): Int {
     var list = listOf<Int>()
     for (element in str) {
-        val digit = fromLatinToInt(element)
+        val digit = if (element in '0'..'9') element - '0' else element - 'a' + 10
         list = list + digit
     }
     return decimal(list, base)
