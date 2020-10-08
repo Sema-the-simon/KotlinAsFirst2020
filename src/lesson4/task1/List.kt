@@ -3,8 +3,9 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import lesson3.task1.*
+import kotlin.math.log10
 import kotlin.math.sqrt
+import kotlin.text.StringBuilder
 
 // Урок 4: списки
 // Максимальное количество баллов = 12
@@ -151,10 +152,8 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int {
-    val result = a.zip(b) { x, y -> x * y }//  var result = 0
-    return result.sum()
-}
+fun times(a: List<Int>, b: List<Int>): Int = a.zip(b) { x, y -> x * y }.sum()
+
 
 /**
  * Средняя (3 балла)
@@ -177,8 +176,8 @@ fun polynom(p: List<Int>, x: Int): Int = TODO()
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    for (i in 0 until list.size) {
-        list[i] = list.subList(0, i).sum()
+    for (i in 1 until list.size) {
+        list[i] += list[i - 1]
     }
     return list
 }
@@ -190,16 +189,7 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Результат разложения вернуть в виде списка множителей, например 75 -> (3, 5, 5).
  * Множители в списке должны располагаться по возрастанию.
  */
-fun factorize(n: Int): List<Int> {
-    var result = listOf<Int>()
-    var number = n
-    while (number != 1) {
-        val divisor = minDivisor(number)
-        result = result + divisor
-        number /= divisor
-    }
-    return result
-}
+fun factorize(n: Int): List<Int> = TODO()
 
 /**
  * Сложная (4 балла)
@@ -261,7 +251,6 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun test(str: String) {}
 
 fun decimalFromString(str: String, base: Int): Int {
     var list = listOf<Int>()
@@ -280,7 +269,38 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+/*
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX",
+        "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
+        "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
+        "M", "MM", "MMM"
+*/
+
+fun roman(n: Int): String {
+    val dicUnits = listOf('I', 'X', 'C', 'M')
+    val dicFives = listOf("V", "L", "D")
+    val result = StringBuilder()
+    var number = n
+    var rank = 1
+    while (number > 0) {
+        var modNumberStr = ""
+        val modNumber = number % 10
+        val index = log10(rank.toDouble()).toInt()
+        modNumberStr = when (modNumber) {
+            in 5..8 -> dicFives[index].padEnd(modNumber - 4, dicUnits[index])
+            in 0..3 -> modNumberStr.padEnd(modNumber, dicUnits[index])
+            else -> {
+                if (modNumber > 5) dicUnits[index + 1].toString().padStart(2, dicUnits[index])
+                else dicFives[index].padStart(2, dicUnits[index])
+            }
+        }
+        rank *= 10
+        result.insert(0, modNumberStr)
+        number /= 10
+    }
+    return result.toString()
+}
+
 
 /**
  * Очень сложная (7 баллов)
@@ -289,4 +309,58 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun russian(n: Int): String {
+    var number = n
+    val dictionaryUnits = listOf(
+        "", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять",
+        "одна", "две"
+    )
+    val dictionaryTens = listOf(
+        "", "десять", "двадцать", "тридцать",
+        "сорок", "пятьдесят", "шестьдесят",
+        "семьдесят", "восемьдесят", "девяносто"
+    )
+    val dictionaryTensExtra = listOf(
+        "одиннадцать", "двенадцать", "тринадцать",
+        "четырнадцать", "пятнадцать", "шестнадцать",
+        "семнадцать", "восемнадцать", "девятнадцать"
+    )
+    val dictionaryHundreds = listOf(
+        "", "сто", "двести", "триста", "четыреста",
+        "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот",
+    )
+    val resultSB = StringBuilder()
+    var rank = 0                                                             // маркер тысячного разряда
+    val modNumberStr = StringBuilder()
+    while (number > 0) {
+        val hundreds = number / 100 % 10
+        modNumberStr.append(dictionaryHundreds[hundreds])
+        if (hundreds > 0) modNumberStr.append(" ")                           // если  разряд отличен от путой строки то после него нужен пробел
+        val tens = number / 10 % 10
+        var units = number % 10
+        if (rank > 0 && units in 1..2) units += 9                            // если тысячный разраяд то вместо один | два -> одна | две
+        if (tens == 1 && units != 0) {
+            modNumberStr.append(dictionaryTensExtra[units - 1]).append(" ")  // чилса от 11 до 19
+        } else {
+            modNumberStr.append(dictionaryTens[tens])
+            if (tens > 0) modNumberStr.append(" ")
+            modNumberStr.append(dictionaryUnits[units])
+            if (units > 0 && rank != 0) modNumberStr.append(" ")
+
+        }
+        if (units > 9) units -= 9
+        val rankStr =
+            // если разраяд тысяч нужен, то он определяется тут
+            if (rank != 0) when {
+                tens == 1 || units == 0 || units in 5..9 -> "тысяч "
+                units in 2..4 -> "тысячи "
+                else -> "тысяча "
+            } else ""
+        rank += 1
+        modNumberStr.append(rankStr)
+        resultSB.insert(0, modNumberStr)
+        number /= 1000
+    }
+    if (resultSB.elementAt(resultSB.lastIndex) == ' ') resultSB.deleteAt(resultSB.lastIndex)   // проверка на лишний пробел и его удаление
+    return resultSB.toString()
+}

@@ -154,6 +154,11 @@ class Tests {
         assertArrayEquals(
             listOf(1, 3, 6, 10).toIntArray(),
             accumulate(arrayListOf(1, 2, 3, 4)).toIntArray()
+
+        )
+        assertArrayEquals(
+            listOf(-1000000000).toIntArray(),
+            accumulate(arrayListOf(-1000000000)).toIntArray()
         )
         val toMutate = mutableListOf(-3, -1, 4, 5, -5)
         assertTrue(toMutate === accumulate(toMutate)) { "You should mutate an input list, not create a copy" }
