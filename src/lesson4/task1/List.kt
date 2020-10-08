@@ -331,8 +331,8 @@ fun russian(n: Int): String {
     )
     val resultSB = StringBuilder()
     var rank = 0                                                             // маркер тысячного разряда
-    val modNumberStr = StringBuilder()
     while (number > 0) {
+        val modNumberStr = StringBuilder()
         val hundreds = number / 100 % 10
         modNumberStr.append(dictionaryHundreds[hundreds])
         if (hundreds > 0) modNumberStr.append(" ")                           // если  разряд отличен от путой строки то после него нужен пробел
@@ -361,6 +361,6 @@ fun russian(n: Int): String {
         resultSB.insert(0, modNumberStr)
         number /= 1000
     }
-    if (resultSB.elementAt(resultSB.lastIndex) == ' ') resultSB.deleteAt(resultSB.lastIndex)   // проверка на лишний пробел и его удаление
+    if (resultSB.elementAt(resultSB.lastIndex) == ' ') resultSB.deleteAt(resultSB.lastIndex)
     return resultSB.toString()
 }
