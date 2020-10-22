@@ -338,7 +338,7 @@ fun russian(n: Int): String {
         if (hundreds > 0) modNumberStr.append(" ")                           // если  разряд отличен от путой строки то после него нужен пробел
         val tens = number / 10 % 10
         var units = number % 10
-        if (rank > 0 && units in 1..2) units += 9                            // если тысячный разраяд то вместо один | два -> одна | две
+        if (rank > 0 && units in 1..2) units += 9                            // если тысяЫчный разраяд то вместо один | два -> одна | две
         if (tens == 1 && units != 0) {
             modNumberStr.append(dictionaryTensExtra[units - 1]).append(" ")  // чилса от 11 до 19
         } else {

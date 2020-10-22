@@ -123,6 +123,8 @@ class Tests {
     fun containsIn() {
         assertTrue(containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")))
         assertFalse(containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")))
+        assertTrue(containsIn(mapOf("a" to "Smth", "c" to "Smb"), mapOf("a" to "Smth", "b" to "sweet", "c" to "Smb")))
+        assertFalse(containsIn(mapOf("a" to "z"), mapOf()))
     }
 
     @Test
@@ -154,6 +156,10 @@ class Tests {
         assertEquals(
             emptyList<String>(),
             whoAreInBoth(listOf("Marat", "Mikhail"), listOf("Sveta", "Kirill"))
+        )
+        assertEquals(
+            listOf("Yuri","Rostik"),
+            whoAreInBoth(listOf("Семён", "Yuri", "Rostik"), listOf("Semyon", "Yuri", "Rostik"))
         )
     }
 
@@ -209,6 +215,7 @@ class Tests {
             mapOf("MSFT" to 150.0, "NFLX" to 45.0),
             averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0, "NFLX" to 50.0))
         )
+
     }
 
     @Test
