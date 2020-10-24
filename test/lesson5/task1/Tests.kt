@@ -241,8 +241,9 @@ class Tests {
     @Tag("3")
     fun canBuildFrom() {
         assertFalse(canBuildFrom(emptyList(), "foo"))
-        assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
+        assertTrue(canBuildFrom(listOf('a', 'b', 'o', 'g'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
+        assertTrue(canBuildFrom(listOf('a', 'm', 'r', 't'), "Marat"))
     }
 
     @Test
@@ -256,9 +257,10 @@ class Tests {
             mapOf("a" to 2),
             extractRepeats(listOf("a", "b", "a"))
         )
+
         assertEquals(
-            emptyMap<String, Int>(),
-            extractRepeats(listOf("a", "b", "c"))
+            mapOf("Pi" to 3, "z" to 4),
+            extractRepeats(listOf("a", "b", "c", "z", "pi", "z", "Pi", "z", "Pi", "z", "Pi"))
         )
     }
 
@@ -270,6 +272,8 @@ class Tests {
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
         assertFalse(hasAnagrams(listOf("поле", "полено")))
         assertTrue(hasAnagrams(listOf("лунь", "нуль")))
+        assertTrue(hasAnagrams(listOf("лунь", "нульн", "луньн")))
+        assertFalse(hasAnagrams(listOf("лунь", "нульн", "луна", "нульл")))
     }
 
     @Test

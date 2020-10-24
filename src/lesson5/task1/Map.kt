@@ -100,8 +100,7 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
     val res = mutableMapOf<Int, List<String>>()
     for ((name, mark) in grades) {
-        res[mark] = res[mark] ?: mutableListOf()
-        res[mark] = res[mark]!! + name
+        res[mark] = res.getOrDefault(mark, mutableListOf()) + name
     }
     return res
 }
@@ -198,18 +197,15 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val setKeys = mutableSetOf<String>()
     val mapStockPrices = mutableMapOf<String, Pair<Double, Int>>()
-    val res = mutableMapOf<String, Double>()
-    for (i in stockPrices.indices) {
-        val key = stockPrices[i].first
-        setKeys.add(key)
-        mapStockPrices[key] = mapStockPrices[key] ?: 0.0 to 0
+    for ((key, price) in stockPrices) {
+        val mapValue = mapStockPrices[key] ?: 0.0 to 0
         mapStockPrices[key] =
-            (mapStockPrices[key]!!.first + stockPrices[i].second) to (mapStockPrices[key]!!.second + 1)
+            (mapValue.first + price) to (mapValue.second + 1)
     }
-    for (key in setKeys) {
-        res[key] = mapStockPrices[key]!!.first / mapStockPrices[key]!!.second
+    val res = mutableMapOf<String, Double>()
+    for ((key, pair) in mapStockPrices) {
+        res[key] = pair.first / pair.second
     }
     return res
 }
@@ -231,16 +227,16 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     var minPrice = 0.0
-    var name = "null"
-    var flag = 0
+    var name = ""
+    var flag = false
     for ((nameInStuff, kindToPrice) in stuff) {
-        if ((kindToPrice.first == kind) && (flag == 0 || kindToPrice.second < minPrice)) {
+        if ((kindToPrice.first == kind) && (!flag || kindToPrice.second < minPrice)) {
             minPrice = kindToPrice.second
-            flag = 1
+            flag = true
             name = nameInStuff
         }
     }
-    return if (name == "null") null
+    return if (name == "") null
     else name
 }
 
@@ -253,7 +249,13 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    for (letter in word.toLowerCase().toSet()) {
+        if (letter in chars.toSet()) continue
+        return false
+    }
+    return true
+}
 
 /**
  * Средняя (4 балла)
@@ -267,7 +269,22 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun numberOfChars(list: List<Any>): MutableMap<Any, Int> {
+    val res = mutableMapOf<Any, Int>()
+    for (any in list) {
+        res[any] = res.getOrDefault(any, 0) + 1
+    }
+    return res
+}
+
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val res = numberOfChars(list) as MutableMap<String, Int>
+    val listOfSingleString = mutableListOf<String>()
+    for ((element, number) in res) {
+        if (number == 1) listOfSingleString += element
+    }
+    return res - listOfSingleString
+}
 
 /**
  * Средняя (3 балла)
@@ -281,7 +298,17 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = TODO()
+fun hasAnagrams(words: List<String>): Boolean {
+    val mapOfWords = mutableMapOf<Map<Char, Int>, Int>()
+    for (word in words) {
+        val key = numberOfChars(word.toList()) as MutableMap<Char, Int>
+        mapOfWords[key] = mapOfWords.getOrDefault(key, 0) + 1
+    }
+    for (value in mapOfWords.values) {
+        if (value > 1) return true
+    }
+    return false
+}
 
 /**
  * Сложная (5 баллов)
