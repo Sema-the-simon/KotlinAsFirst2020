@@ -235,6 +235,13 @@ class Tests {
                 "печенье"
             )
         )
+        assertEquals(
+            "",
+            findCheapestStuff(
+                mapOf("" to ("" to 0.0)),
+                ""
+            )
+        )
     }
 
     @Test
@@ -244,6 +251,7 @@ class Tests {
         assertTrue(canBuildFrom(listOf('a', 'b', 'o', 'g'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
         assertTrue(canBuildFrom(listOf('a', 'm', 'r', 't'), "Marat"))
+        assertTrue(canBuildFrom(listOf('a', 'I'), "aI"))
     }
 
     @Test

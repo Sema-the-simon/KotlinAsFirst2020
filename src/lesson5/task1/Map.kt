@@ -227,7 +227,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     var minPrice = 0.0
-    var name = ""
+    var name: String? = null
     var flag = false
     for ((nameInStuff, kindToPrice) in stuff) {
         if ((kindToPrice.first == kind) && (!flag || kindToPrice.second < minPrice)) {
@@ -236,8 +236,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
             name = nameInStuff
         }
     }
-    return if (name == "") null
-    else name
+    return name
 }
 
 /**
@@ -251,7 +250,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     for (letter in word.toLowerCase().toSet()) {
-        if (letter in chars.toSet()) continue
+        if (letter in chars.map { it.toLowerCase() }.toSet()) continue
         return false
     }
     return true
