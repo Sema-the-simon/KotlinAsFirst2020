@@ -319,6 +319,22 @@ class Tests {
                 )
             )
         )
+        assertEquals(
+            mapOf(
+                "Marat" to setOf("Mikhail", "Sveta", "EvilGnome"),
+                "Sveta" to setOf("Mikhail", "EvilGnome", "Marat"),
+                "Mikhail" to setOf("EvilGnome", "Marat", "Sveta"),
+                "EvilGnome" to setOf("Marat", "Sveta", "Mikhail")
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "Marat" to setOf("Sveta"),
+                    "Sveta" to setOf("Mikhail"),
+                    "Mikhail" to setOf("EvilGnome"),
+                    "EvilGnome" to setOf("Marat")
+                )
+            )
+        )
     }
 
     @Test

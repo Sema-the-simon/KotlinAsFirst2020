@@ -199,9 +199,9 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val mapStockPrices = mutableMapOf<String, Pair<Double, Int>>()
     for ((key, price) in stockPrices) {
-        val mapValue = mapStockPrices[key] ?: 0.0 to 0
+        val (mapPrice, count) = mapStockPrices[key] ?: 0.0 to 0
         mapStockPrices[key] =
-            (mapValue.first + price) to (mapValue.second + 1)
+            (mapPrice + price) to (count + 1)
     }
     val res = mutableMapOf<String, Double>()
     for ((key, pair) in mapStockPrices) {
@@ -249,8 +249,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    val setOfChars = chars.map { it.toLowerCase() }.toSet()
     for (letter in word.toLowerCase().toSet()) {
-        if (letter in chars.map { it.toLowerCase() }.toSet()) continue
+        if (letter in setOfChars) continue
         return false
     }
     return true
@@ -268,8 +269,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun numberOfChars(list: List<Any>): MutableMap<Any, Int> {
-    val res = mutableMapOf<Any, Int>()
+fun <T> numberOfChars(list: List<T>): MutableMap<T, Int> {
+    val res = mutableMapOf<T, Int>()
     for (any in list) {
         res[any] = res.getOrDefault(any, 0) + 1
     }
@@ -277,7 +278,7 @@ fun numberOfChars(list: List<Any>): MutableMap<Any, Int> {
 }
 
 fun extractRepeats(list: List<String>): Map<String, Int> {
-    val res = numberOfChars(list) as MutableMap<String, Int>
+    val res = numberOfChars(list)
     val listOfSingleString = mutableListOf<String>()
     for ((element, number) in res) {
         if (number == 1) listOfSingleString += element
@@ -300,7 +301,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
 fun hasAnagrams(words: List<String>): Boolean {
     val mapOfWords = mutableMapOf<Map<Char, Int>, Int>()
     for (word in words) {
-        val key = numberOfChars(word.toList()) as MutableMap<Char, Int>
+        val key = numberOfChars(word.toList())
         mapOfWords[key] = mapOfWords.getOrDefault(key, 0) + 1
     }
     for (value in mapOfWords.values) {
@@ -343,8 +344,70 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()/*{
+    val setOfAllNames = mutableSetOf<String>()
+    for ((name, mainFriends) in friends) {
+        setOfAllNames += name
+        for (mainFrName in mainFriends) setOfAllNames += mainFrName
+    }
+    var allFriends = mapOf<String, Set<String>>()
+    val setDoneNames = mutableSetOf<String>()
+    for (name in setOfAllNames) {
+        if (name in setDoneNames) continue
+        val (allFriendsCh, setDoneNameCh) = findAllFriends(friends, name, setDoneNames, null)
+        allFriends = allFriendsCh
+        setDoneNames += setDoneNameCh
+    }
+    return allFriends
+}*/
 
+/*fun findAllFriends(
+    mainFriends: Map<String, Set<String>>,
+    name: String,
+    setDoneNames: Set<String>,
+    stopName: String?
+): Pair<Map<String, Set<String>>, Set<String>> {
+    var mainFriendsCh = mainFriends.toMutableMap()
+    val setDoneNamesCh = setDoneNames.toMutableSet()
+    val res = mainFriends[name]?.toMutableSet()
+    setDoneNamesCh += name
+    if (res != null && name != stopName && name !in setDoneNamesCh) {
+        val stopNameCh = stopName ?: name
+        for (friendName in res) {
+            val (friendsMap, friendsSet) = findAllFriends(mainFriends, friendName, setDoneNames, stopNameCh)
+            res += friendsMap.getOrDefault(friendName, setOf()) - name
+            mainFriendsCh = friendsMap.toMutableMap()
+            setDoneNamesCh += friendsSet.toMutableSet()
+            mainFriendsCh[name] = res
+        }
+    }
+    mainFriendsCh[name] = mainFriendsCh.getOrDefault(name, setOf())
+    return mainFriendsCh to setDoneNamesCh
+}*/
+
+/*   val setOfAllNames = mutableSetOf<String>()
+    for ((name, mainFriends) in friends) {
+        setOfAllNames += name
+        for (mainFrName in mainFriends) setOfAllNames += mainFrName
+    }
+    val allFriends = mutableMapOf<String, MutableSet<String>>()
+    val allAdditionalFriends = mutableMapOf<String, Set<String>>()
+    for (name in setOfAllNames) {
+        val mainFriends = friends.getOrDefault(name, setOf())
+        allFriends[name] = mainFriends.toMutableSet()
+        for (mainFrName in mainFriends) {
+            allAdditionalFriends[name] = friends.getOrDefault(mainFrName, mutableSetOf()) - name
+        }
+        allFriends[name]?.addAll(allAdditionalFriends.getOrDefault(name, mutableSetOf()))
+    }
+   return allFriends */
+
+
+/*for (name in setOfName){
+    if (name in doneSetName) continue
+    allFriends = foo(name,map,doneSetName).first
+    }
+    }*/
 /**
  * Сложная (6 баллов)
  *
