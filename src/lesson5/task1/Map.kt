@@ -344,7 +344,9 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()/*{
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+/*
+{
     val setOfAllNames = mutableSetOf<String>()
     for ((name, mainFriends) in friends) {
         setOfAllNames += name
@@ -359,9 +361,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
         setDoneNames += setDoneNameCh
     }
     return allFriends
-}*/
+}
 
-/*fun findAllFriends(
+fun findAllFriends(
     mainFriends: Map<String, Set<String>>,
     name: String,
     setDoneNames: Set<String>,
@@ -383,9 +385,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     }
     mainFriendsCh[name] = mainFriendsCh.getOrDefault(name, setOf())
     return mainFriendsCh to setDoneNamesCh
-}*/
+}
 
-/*   val setOfAllNames = mutableSetOf<String>()
+   val setOfAllNames = mutableSetOf<String>()
     for ((name, mainFriends) in friends) {
         setOfAllNames += name
         for (mainFrName in mainFriends) setOfAllNames += mainFrName
@@ -402,12 +404,6 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     }
    return allFriends */
 
-
-/*for (name in setOfName){
-    if (name in doneSetName) continue
-    allFriends = foo(name,map,doneSetName).first
-    }
-    }*/
 /**
  * Сложная (6 баллов)
  *
@@ -425,7 +421,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val mapOfNumber = mutableMapOf<Int, Int>()
+    for (i in list.indices) {
+        val analysingNumber = list[i]
+        val possiblePair = mapOfNumber[number - analysingNumber]
+        if (possiblePair != null) return possiblePair to i
+        mapOfNumber[analysingNumber] = i
+    }
+    return -1 to -1
+}
 
 /**
  * Очень сложная (8 баллов)
