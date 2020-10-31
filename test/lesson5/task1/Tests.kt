@@ -379,5 +379,16 @@ class Tests {
                 450
             )
         )
+        assertEquals(
+            setOf("Doshirak", "Кубок"),
+            bagPacking(
+                mapOf(
+                    "Слиток" to (1000 to 5000),
+                    "Doshirak" to (150 to 1200),
+                    "Telephone" to (850 to 3000),
+                    "Кубок" to (500 to 2000)
+                ), 850
+            )
+        )
     }
 }

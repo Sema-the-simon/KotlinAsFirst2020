@@ -269,7 +269,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun <T> numberOfChars(list: List<T>): MutableMap<T, Int> {
+fun <T> numberOfChars(list: List<T>): Map<T, Int> {
     val res = mutableMapOf<T, Int>()
     for (any in list) {
         res[any] = res.getOrDefault(any, 0) + 1
@@ -453,4 +453,45 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val listOfTreasures = treasures.toList()
+    val result = setOf<String>()
+    return treasuresAnalizing(listOfTreasures.size - 1, listOfTreasures, capacity, result).first
+}
+
+
+fun treasuresAnalizing(
+    index: Int,
+    listOfTreasures: List<Pair<String, Pair<Int, Int>>>,
+    capacity: Int,
+    setOfTreasures: Set<String>
+): Pair<Set<String>, Int> {
+    val currentTreasure = listOfTreasures[index].first
+    val (veight, cost) = listOfTreasures[index].second
+    val resSetOfTreasures = setOfTreasures.toMutableSet()
+    val resCost = 0
+    if (index == 0) {
+        return if (veight > capacity)
+            resSetOfTreasures to resCost
+        else
+            (resSetOfTreasures + currentTreasure) to cost
+    } else {
+        val withoutCurrent = treasuresAnalizing(
+            index - 1,
+            listOfTreasures,
+            capacity,
+            resSetOfTreasures
+        )
+        return if (veight > capacity) withoutCurrent
+        else {
+            val withCurrent = treasuresAnalizing(
+                index - 1,
+                listOfTreasures,
+                capacity - veight,
+                resSetOfTreasures
+            )
+            if (withoutCurrent.second > withCurrent.second) withoutCurrent
+            else (withCurrent.first + currentTreasure) to withCurrent.second
+        }
+    }
+}
