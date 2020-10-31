@@ -491,7 +491,7 @@ fun treasuresAnalizing(
                 capacity - veight,
                 resSetOfTreasures
             )
-            if (withoutCurrent.second > withCurrent.second) withoutCurrent
+            if (withoutCurrent.second > withCurrent.second + cost) withoutCurrent
             else (withCurrent.first + currentTreasure) to withCurrent.second
         }
     }
