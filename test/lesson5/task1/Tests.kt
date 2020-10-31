@@ -409,5 +409,15 @@ class Tests {
                 ), 2
             )
         )
+        assertEquals(
+            setOf("1", "0"),
+            bagPacking(
+                mapOf(
+                    "0" to (49 to 3),
+                    "1" to (433 to 2),
+                    "2" to (446 to 1),
+                ), 912
+            )
+        )
     }
 }

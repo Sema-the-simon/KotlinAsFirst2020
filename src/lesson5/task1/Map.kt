@@ -492,7 +492,7 @@ fun treasuresAnalizing(
                 resSetOfTreasures
             )
             if (withoutCurrent.second > withCurrent.second + cost) withoutCurrent
-            else (withCurrent.first + currentTreasure) to withCurrent.second
+            else (withCurrent.first + currentTreasure) to (withCurrent.second + cost)
         }
     }
 }
