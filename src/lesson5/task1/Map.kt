@@ -456,7 +456,8 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val listOfTreasures = treasures.toList()
     val result = setOf<String>()
-    return treasuresAnalizing(listOfTreasures.size - 1, listOfTreasures, capacity, result).first
+    return if (listOfTreasures.isEmpty()) result
+    else treasuresAnalizing(listOfTreasures.size - 1, listOfTreasures, capacity, result).first
 }
 
 

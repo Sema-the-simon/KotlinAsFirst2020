@@ -390,5 +390,12 @@ class Tests {
                 ), 850
             )
         )
+        assertEquals(
+            emptySet<String>(),
+            bagPacking(
+                emptyMap(),
+                1
+            )
+        )
     }
 }
