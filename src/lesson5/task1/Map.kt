@@ -117,8 +117,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     for (key in a.keys) {
-        if (a[key] == b[key]) continue
-        return false
+        if (a[key] != b[key]) return false
     }
     return true
 }
@@ -181,7 +180,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
         val values = mutableSetOf<String>()
         if (mapA[key] != null) values.add(mapA.getValue(key))
         if (mapB[key] != null) values.add(mapB.getValue(key))
-        result[key] = values.joinToString { it }
+        result[key] = values.joinToString()
     }
     return result
 }
@@ -226,13 +225,11 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = 0.0
+    var minPrice = -1.0
     var name: String? = null
-    var flag = false
     for ((nameInStuff, kindToPrice) in stuff) {
-        if ((kindToPrice.first == kind) && (!flag || kindToPrice.second < minPrice)) {
+        if ((kindToPrice.first == kind) && (minPrice < 0 || kindToPrice.second < minPrice)) {
             minPrice = kindToPrice.second
-            flag = true
             name = nameInStuff
         }
     }
@@ -251,8 +248,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val setOfChars = chars.map { it.toLowerCase() }.toSet()
     for (letter in word.toLowerCase().toSet()) {
-        if (letter in setOfChars) continue
-        return false
+        if (letter !in setOfChars) return false
     }
     return true
 }
@@ -277,14 +273,7 @@ fun <T> numberOfChars(list: List<T>): Map<T, Int> {
     return res
 }
 
-fun extractRepeats(list: List<String>): Map<String, Int> {
-    val res = numberOfChars(list)
-    val listOfSingleString = mutableListOf<String>()
-    for ((element, number) in res) {
-        if (number == 1) listOfSingleString += element
-    }
-    return res - listOfSingleString
-}
+fun extractRepeats(list: List<String>): Map<String, Int> = numberOfChars(list).filter { it.value > 1 }
 
 /**
  * Средняя (3 балла)
