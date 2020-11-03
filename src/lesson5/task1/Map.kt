@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import kotlin.math.max
+
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -334,64 +336,6 @@ fun hasAnagrams(words: List<String>): Boolean {
  *        )
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
-/*
-{
-    val setOfAllNames = mutableSetOf<String>()
-    for ((name, mainFriends) in friends) {
-        setOfAllNames += name
-        for (mainFrName in mainFriends) setOfAllNames += mainFrName
-    }
-    var allFriends = mapOf<String, Set<String>>()
-    val setDoneNames = mutableSetOf<String>()
-    for (name in setOfAllNames) {
-        if (name in setDoneNames) continue
-        val (allFriendsCh, setDoneNameCh) = findAllFriends(friends, name, setDoneNames, null)
-        allFriends = allFriendsCh
-        setDoneNames += setDoneNameCh
-    }
-    return allFriends
-}
-
-fun findAllFriends(
-    mainFriends: Map<String, Set<String>>,
-    name: String,
-    setDoneNames: Set<String>,
-    stopName: String?
-): Pair<Map<String, Set<String>>, Set<String>> {
-    var mainFriendsCh = mainFriends.toMutableMap()
-    val setDoneNamesCh = setDoneNames.toMutableSet()
-    val res = mainFriends[name]?.toMutableSet()
-    setDoneNamesCh += name
-    if (res != null && name != stopName && name !in setDoneNamesCh) {
-        val stopNameCh = stopName ?: name
-        for (friendName in res) {
-            val (friendsMap, friendsSet) = findAllFriends(mainFriends, friendName, setDoneNames, stopNameCh)
-            res += friendsMap.getOrDefault(friendName, setOf()) - name
-            mainFriendsCh = friendsMap.toMutableMap()
-            setDoneNamesCh += friendsSet.toMutableSet()
-            mainFriendsCh[name] = res
-        }
-    }
-    mainFriendsCh[name] = mainFriendsCh.getOrDefault(name, setOf())
-    return mainFriendsCh to setDoneNamesCh
-}
-
-   val setOfAllNames = mutableSetOf<String>()
-    for ((name, mainFriends) in friends) {
-        setOfAllNames += name
-        for (mainFrName in mainFriends) setOfAllNames += mainFrName
-    }
-    val allFriends = mutableMapOf<String, MutableSet<String>>()
-    val allAdditionalFriends = mutableMapOf<String, Set<String>>()
-    for (name in setOfAllNames) {
-        val mainFriends = friends.getOrDefault(name, setOf())
-        allFriends[name] = mainFriends.toMutableSet()
-        for (mainFrName in mainFriends) {
-            allAdditionalFriends[name] = friends.getOrDefault(mainFrName, mutableSetOf()) - name
-        }
-        allFriends[name]?.addAll(allAdditionalFriends.getOrDefault(name, mutableSetOf()))
-    }
-   return allFriends */
 
 /**
  * Сложная (6 баллов)
@@ -443,6 +387,48 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val listOfMeasures = treasures.values.toMutableList()
+    listOfMeasures.add(0, 0 to 0)
+    val listOfTreasures = treasures.keys.toMutableList()
+    listOfTreasures.add(0, "0")
+    val table = mutableListOf<List<Int>>()
+    val zeroRow = mutableListOf<Int>()
+    for (m in 0..capacity) zeroRow += 0
+    table.add(0, zeroRow)
+    for (i in 1 until listOfMeasures.size) {
+        val currentRow = mutableListOf<Int>()
+        val (currentVeight, currentCost) = listOfMeasures[i]
+        val previousRow = table[i - 1]
+        for (m in 0..capacity) {
+            if (currentVeight > m) currentRow.add(m, previousRow[m])
+            else currentRow.add(m, max(previousRow[m], previousRow[m - currentVeight] + currentCost))
+        }
+        table.add(i, currentRow)
+    }
+    return findAllTreasures(table, listOfTreasures, listOfMeasures, listOfMeasures.lastIndex, capacity)
+}
+
+fun findAllTreasures(
+    table: List<List<Int>>,
+    listOfTreasures: List<String>,
+    listOfMeasures: List<Pair<Int, Int>>,
+    i: Int,
+    m: Int
+): Set<String> {
+    val currentRow = table[i]
+    val res = mutableSetOf<String>()
+    if (currentRow[m] == 0) return res
+    val previousRow = table[i - 1]
+    val veight = listOfMeasures[i].first
+    if (currentRow[m] == previousRow[m]) res += findAllTreasures(table, listOfTreasures, listOfMeasures, i - 1, m)
+    else {
+        res += findAllTreasures(table, listOfTreasures, listOfMeasures, i - 1, m - veight)
+        res.add(listOfTreasures[i])
+    }
+    return res
+}
+
+/*{
     val listOfTreasures = treasures.toList()
     val result = setOf<String>()
     return if (listOfTreasures.isEmpty()) result
@@ -485,3 +471,4 @@ fun treasuresAnalizing(
         }
     }
 }
+*/
