@@ -227,10 +227,10 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = -1.0
+    var minPrice = 0.0
     var name: String? = null
     for ((nameInStuff, kindToPrice) in stuff) {
-        if ((kindToPrice.first == kind) && (minPrice < 0 || kindToPrice.second < minPrice)) {
+        if ((kindToPrice.first == kind) && (name == null || kindToPrice.second < minPrice)) {
             minPrice = kindToPrice.second
             name = nameInStuff
         }
@@ -391,7 +391,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     listOfMeasures.add(0, 0 to 0)
     val listOfTreasures = treasures.keys.toMutableList()
     listOfTreasures.add(0, "0")
-    val table = mutableListOf<List<Int>>()
+    val table = mutableListOf<MutableList<Int>>()
     val zeroRow = mutableListOf<Int>()
     for (m in 0..capacity) zeroRow += 0
     table.add(0, zeroRow)
