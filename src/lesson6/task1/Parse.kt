@@ -92,7 +92,7 @@ fun dateStrToDigit(str: String): String {
         val month = dictionary[parts[1]] ?: throw NumberFormatException("For input string: ${parts[1]}")
         val year = parts[2].toInt()
         if (days > daysInMonth(month, year)) throw NumberFormatException("For input string: $days")
-        String.format("%02d.%02d.%02d", days, month, year)
+        String.format("%02d.%02d.%01d", days, month, year)
     } catch (e: NumberFormatException) {
         ""
     }
@@ -208,7 +208,7 @@ fun bestHighJump(jumps: String): Int {
 fun plusMinus(expression: String): Int {
     val analysingString = expression.split(" ")
     val error = IllegalArgumentException("For input string: $expression")
-    if (analysingString.size % 2 != 1) throw error
+    if (analysingString.size % 2 != 1 || expression.isEmpty()) throw error
     try {
         var result = if (analysingString[0][0].isDigit()) analysingString[0].toInt()
         else throw error
@@ -240,15 +240,14 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val analysingString = str.split(" ")
     var previousWord = analysingString[0].toLowerCase()
-    var result = -1
     var currentlenght = previousWord.length
     for (i in 1 until analysingString.size) {
         val currentWord = analysingString[i].toLowerCase()
-        if (currentWord == previousWord) result = currentlenght + i - 1 - previousWord.length
+        if (currentWord == previousWord) return currentlenght + i - 1 - previousWord.length
         currentlenght += currentWord.length
         previousWord = currentWord
     }
-    return result
+    return -1
 }
 
 /**
@@ -264,9 +263,9 @@ fun firstDuplicateIndex(str: String): Int {
  */
 fun mostExpensive(description: String): String {
     val analysingString = description.split("; ", " ")
-    var result = "" to 0.0
+    var result = "" to -1.0
     val error = NumberFormatException("For input string: $description")
-    try {
+    return try {
         if (analysingString.size % 2 != 0) throw error
         for (i in 1..analysingString.size step 2) {
             val product = analysingString[i - 1]
@@ -274,9 +273,9 @@ fun mostExpensive(description: String): String {
             if (price < 0) throw error
             if (price > result.second) result = product to price
         }
-        return result.first
+        result.first
     } catch (e: NumberFormatException) {
-        return ""
+        ""
     }
 }
 
@@ -298,6 +297,7 @@ fun mostExpensive(description: String): String {
         "M", "MM", "MMM"
 */
 fun fromRoman(roman: String): Int {
+    if (roman.isEmpty()) return -1
     val dicUnits = listOf('I', 'X', 'C', 'M')
     val dicFives = listOf('V', 'L', 'D')
     var result = 0

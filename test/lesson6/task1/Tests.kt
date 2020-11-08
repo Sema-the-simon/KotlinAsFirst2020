@@ -43,6 +43,7 @@ class Tests {
         assertEquals("", dateStrToDigit("29 февраля 1993"))
         assertEquals("", dateStrToDigit("12.05.2002"))
         assertEquals("", dateStrToDigit("AA BB CC"))
+        assertEquals("01.01.1", dateStrToDigit("1 января 1"))
 
     }
 
@@ -98,6 +99,7 @@ class Tests {
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
+        assertThrows(IllegalArgumentException::class.java) { plusMinus("") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - -2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
@@ -111,6 +113,7 @@ class Tests {
         assertEquals(9, firstDuplicateIndex("Он пошёл в в школу"))
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
         assertEquals(9, firstDuplicateIndex("Мы пошли Прямо прямо располагался магазин"))
+        assertEquals(0, firstDuplicateIndex("a a a a"))
     }
 
     @Test
@@ -120,12 +123,14 @@ class Tests {
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 89.9"))
         assertEquals("", mostExpensive("Хлеб 39.0* Молоко 62.5* Курица 184.0* Конфеты 89.9"))
         assertEquals("Вино", mostExpensive("Вино 255.0"))
+        assertEquals("a", mostExpensive("a 0"))
     }
 
     @Test
     @Tag("6")
     fun fromRoman() {
         assertEquals(1, fromRoman("I"))
+        assertEquals(-1, fromRoman(""))
         assertEquals(3000, fromRoman("MMM"))
         assertEquals(1978, fromRoman("MCMLXXVIII"))
         assertEquals(694, fromRoman("DCXCIV"))
