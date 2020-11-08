@@ -41,6 +41,9 @@ class Tests {
         assertEquals("03.04.2011", dateStrToDigit("3 апреля 2011"))
         assertEquals("", dateStrToDigit("32 сентября 2011"))
         assertEquals("", dateStrToDigit("29 февраля 1993"))
+        assertEquals("", dateStrToDigit("12.05.2002"))
+        assertEquals("", dateStrToDigit("AA BB CC"))
+
     }
 
     @Test
@@ -63,7 +66,7 @@ class Tests {
         assertEquals("+12345", flattenPhoneNumber("+12 (3) 4-5"))
         assertEquals("", flattenPhoneNumber("+12 () 4-5"))
         assertEquals("+425667", flattenPhoneNumber("+42 56 -- 67"))
-        assertEquals("+42566789", flattenPhoneNumber("+42(56 -- 67)89"))
+        assertEquals("+42566789", flattenPhoneNumber("+42(56 --  67)89"))
         assertEquals("", flattenPhoneNumber("ab-123"))
         assertEquals("", flattenPhoneNumber("134_+874"))
     }
@@ -83,6 +86,7 @@ class Tests {
     fun bestHighJump() {
         assertEquals(226, bestHighJump("226 +"))
         assertEquals(-1, bestHighJump("???"))
+        assertEquals(-1, bestHighJump("220 + 255%%"))
         assertEquals(230, bestHighJump("220 + 224 %+ 228 %- 230 + 232 %%- 234 %"))
     }
 
@@ -106,7 +110,7 @@ class Tests {
         assertEquals(-1, firstDuplicateIndex("Привет"))
         assertEquals(9, firstDuplicateIndex("Он пошёл в в школу"))
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
-        assertEquals(9, firstDuplicateIndex("Мы пошли прямо Прямо располагался магазин"))
+        assertEquals(9, firstDuplicateIndex("Мы пошли Прямо прямо располагался магазин"))
     }
 
     @Test
@@ -114,6 +118,7 @@ class Tests {
     fun mostExpensive() {
         assertEquals("", mostExpensive(""))
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 89.9"))
+        assertEquals("", mostExpensive("Хлеб 39.0* Молоко 62.5* Курица 184.0* Конфеты 89.9"))
         assertEquals("Вино", mostExpensive("Вино 255.0"))
     }
 
@@ -126,6 +131,7 @@ class Tests {
         assertEquals(694, fromRoman("DCXCIV"))
         assertEquals(49, fromRoman("XLIX"))
         assertEquals(-1, fromRoman("Z"))
+        assertEquals(-1, fromRoman("IIIIIXC"))
     }
 
     @Test

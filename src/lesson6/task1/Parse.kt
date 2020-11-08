@@ -2,6 +2,11 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+import java.lang.IllegalArgumentException
+import kotlin.math.pow
+
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +79,26 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val dictionary = mapOf(
+        "января" to 1, "февраля" to 2, "марта" to 3, "апреля" to 4,
+        "мая" to 5, "июня" to 6, "июля" to 7, "августа" to 8,
+        "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12
+    )
+    val parts = str.split(" ")
+    return try {
+        if (parts.size != 3) throw NumberFormatException("For input string: $str")
+        val days = parts[0].toInt()
+        val month = dictionary[parts[1]] ?: throw NumberFormatException("For input string: ${parts[1]}")
+        val year = parts[2].toInt()
+        if (days > daysInMonth(month, year)) throw NumberFormatException("For input string: $days")
+        String.format("%02d.%02d.%02d", days, month, year)
+    } catch (e: NumberFormatException) {
+        ""
+    }
+
+}
+
 
 /**
  * Средняя (4 балла)
@@ -102,7 +126,30 @@ fun dateDigitToStr(digital: String): String = TODO()
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val set = setOf(' ', '-')
+    val analysingString = phone.filterNot { it in set }
+    val result = StringBuilder()
+    var indexOfOpen = -1
+    var indexOfClose = -1
+    val error = NumberFormatException("For input string: $phone")
+    try {
+        for (i in analysingString.indices)
+            when (val char = analysingString[i]) {
+                '+' -> if (i == 0) result.append(char)
+                else throw error
+                '(' -> if (indexOfOpen < 0) indexOfOpen = i
+                else throw  error
+                ')' -> if (indexOfOpen != -1 && indexOfClose < 0 && i - indexOfOpen > 1) indexOfClose = i
+                else throw error
+                in '0'..'9' -> result.append(char)
+                else -> throw error
+            }
+        return result.toString()
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Средняя (5 баллов)
@@ -127,7 +174,27 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val analysingString = jumps.split(" ")
+    var maxHeight = -1
+    try {
+        if (analysingString.size % 2 != 0) throw NumberFormatException("For input string: $jumps")
+        for (i in 0..analysingString.size - 2 step 2) {
+            val height = analysingString[i].toInt()
+            val stringOfAttempts = analysingString[i + 1]
+            for (attempt in stringOfAttempts) {
+                when (attempt) {
+                    '+' -> if (height > maxHeight) maxHeight = height
+                    '%', '-' -> continue
+                    else -> throw NumberFormatException("For input string: $stringOfAttempts")
+                }
+            }
+        }
+        return maxHeight
+    } catch (e: NumberFormatException) {
+        return -1
+    }
+}
 
 /**
  * Сложная (6 баллов)
@@ -138,7 +205,28 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val analysingString = expression.split(" ")
+    val error = IllegalArgumentException("For input string: $expression")
+    if (analysingString.size % 2 != 1) throw error
+    try {
+        var result = if (analysingString[0][0].isDigit()) analysingString[0].toInt()
+        else throw error
+        for (i in 1 until analysingString.size step 2) {
+            val currentNumber = if (analysingString[i + 1][0].isDigit()) analysingString[i + 1].toInt()
+            else throw error
+            when (analysingString[i]) {
+                "+" -> result += currentNumber
+                "-" -> result -= currentNumber
+                else -> throw error
+
+            }
+        }
+        return result
+    } catch (e: NumberFormatException) {
+        throw IllegalArgumentException("For input string: $expression")
+    }
+}
 
 /**
  * Сложная (6 баллов)
@@ -149,7 +237,19 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val analysingString = str.split(" ")
+    var previousWord = analysingString[0].toLowerCase()
+    var result = -1
+    var currentlenght = previousWord.length
+    for (i in 1 until analysingString.size) {
+        val currentWord = analysingString[i].toLowerCase()
+        if (currentWord == previousWord) result = currentlenght + i - 1 - previousWord.length
+        currentlenght += currentWord.length
+        previousWord = currentWord
+    }
+    return result
+}
 
 /**
  * Сложная (6 баллов)
@@ -162,7 +262,23 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    val analysingString = description.split("; ", " ")
+    var result = "" to 0.0
+    val error = NumberFormatException("For input string: $description")
+    try {
+        if (analysingString.size % 2 != 0) throw error
+        for (i in 1..analysingString.size step 2) {
+            val product = analysingString[i - 1]
+            val price = analysingString[i].toDouble()
+            if (price < 0) throw error
+            if (price > result.second) result = product to price
+        }
+        return result.first
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Сложная (6 баллов)
@@ -175,7 +291,74 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+/*
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX",
+        "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
+        "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
+        "M", "MM", "MMM"
+*/
+fun fromRoman(roman: String): Int {
+    val dicUnits = listOf('I', 'X', 'C', 'M')
+    val dicFives = listOf('V', 'L', 'D')
+    var result = 0
+    var minIndex = 4
+    var newNumber = 0
+    var previousIndex = 0
+    for (currentChar in roman) {
+        val currentIndex = when (currentChar) {
+            in dicUnits -> dicUnits.indexOf(currentChar)
+            in dicFives -> dicFives.indexOf(currentChar)
+            else -> return -1
+        }
+        when {
+            newNumber == 0 && currentIndex == 3 -> {
+                result += 1000
+                minIndex = currentIndex
+            }
+            newNumber == 0 && currentIndex < minIndex -> {
+                previousIndex = currentIndex
+                if (currentChar in dicUnits) {
+                    newNumber += 1
+                    result += 10.0.pow(currentIndex).toInt()
+                } else {
+                    result += 5 * 10.0.pow(currentIndex).toInt()
+                }
+            }
+            newNumber != 0 && currentIndex <= minIndex -> {
+                when (currentIndex) {
+                    previousIndex + 1 -> {
+                        result += 8 * 10.0.pow(previousIndex).toInt()
+                        minIndex = previousIndex
+                        newNumber = 0
+                    }
+                    previousIndex -> {
+                        minIndex = previousIndex
+                        if (currentChar in dicUnits) {
+                            result += 10.0.pow(currentIndex).toInt()
+                            if (newNumber < 2) newNumber += 1
+                            else newNumber = 0
+                        } else {
+                            result += 3 * 10.0.pow(currentIndex).toInt()
+                            newNumber = 0
+                        }
+                    }
+                    else -> {
+                        previousIndex = currentIndex
+                        if (currentChar in dicUnits) {
+                            newNumber = 1
+                            result += 10.0.pow(currentIndex).toInt()
+                        } else {
+                            newNumber = 0
+                            result += 5 * 10.0.pow(currentIndex).toInt()
+                        }
+                    }
+                }
+            }
+            else -> return -1
+        }
+    }
+    return result
+}
 
 /**
  * Очень сложная (7 баллов)
