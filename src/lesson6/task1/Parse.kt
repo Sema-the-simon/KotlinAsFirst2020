@@ -127,28 +127,10 @@ fun dateDigitToStr(digital: String): String = TODO()
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    val set = setOf(' ', '-')
-    val analysingString = phone.filterNot { it in set }
-    val result = StringBuilder()
-    var indexOfOpen = -1
-    var indexOfClose = -1
-    val error = NumberFormatException("For input string: $phone")
-    try {
-        for (i in analysingString.indices)
-            when (val char = analysingString[i]) {
-                '+' -> if (i == 0) result.append(char)
-                else throw error
-                '(' -> if (indexOfOpen < 0) indexOfOpen = i
-                else throw  error
-                ')' -> if (indexOfOpen != -1 && indexOfClose < 0 && i - indexOfOpen > 1) indexOfClose = i
-                else throw error
-                in '0'..'9' -> result.append(char)
-                else -> throw error
-            }
-        return result.toString()
-    } catch (e: NumberFormatException) {
-        return ""
-    }
+    val analysingString = phone.filterNot { it in setOf(' ', '-') }
+    val patternString = Regex("^(\\+[0-9]+)?(\\([0-9]+\\))?[0-9]*").find(analysingString, 0)?.value
+    return if (patternString != analysingString) ""
+    else analysingString.filterNot { it in setOf('(', ')') }
 }
 
 /**
@@ -177,23 +159,19 @@ fun bestLongJump(jumps: String): Int = TODO()
 fun bestHighJump(jumps: String): Int {
     val analysingString = jumps.split(" ")
     var maxHeight = -1
-    try {
-        if (analysingString.size % 2 != 0) throw NumberFormatException("For input string: $jumps")
-        for (i in 0..analysingString.size - 2 step 2) {
-            val height = analysingString[i].toInt()
-            val stringOfAttempts = analysingString[i + 1]
-            for (attempt in stringOfAttempts) {
-                when (attempt) {
-                    '+' -> if (height > maxHeight) maxHeight = height
-                    '%', '-' -> continue
-                    else -> throw NumberFormatException("For input string: $stringOfAttempts")
-                }
+    val patternString = Regex("([1-9][0-9]* [+%-]+ )+").find("$jumps ", 0)?.value
+    if (patternString != "$jumps ") return -1
+    for (i in 0..analysingString.size - 2 step 2) {
+        val height = analysingString[i].toInt()
+        val stringOfAttempts = analysingString[i + 1]
+        for (attempt in stringOfAttempts) {
+            when (attempt) {
+                '+' -> if (height > maxHeight) maxHeight = height
+                else -> continue
             }
         }
-        return maxHeight
-    } catch (e: NumberFormatException) {
-        return -1
     }
+    return maxHeight
 }
 
 /**
