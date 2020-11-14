@@ -3,7 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import java.lang.IllegalArgumentException
+import kotlin.IllegalArgumentException
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -333,4 +333,84 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val argError = IllegalArgumentException("For input String: $commands")
+    if (Regex("[^+\\[\\]\\-<> ]").find(commands)?.value != null) // если присутствуют символы отличные от заданных -> исключение
+        throw argError
+    val openList = mutableListOf<Int>()
+    val closeList = mutableListOf<Int>()
+    var indexClose = 0
+    var indexOpen = 0
+    val mapOfIndexOpen = mutableMapOf<Int, Int>()
+    if (commands.filter { it == '[' }.length != commands.filter { it == ']' }.length) throw argError
+    for (i in commands.filter { it == '[' }.indices) {
+        openList.add(0)
+        closeList.add(0)
+    }
+    for (i in commands.indices) {
+        when (commands[i]) {
+            '[' -> {
+                openList[indexOpen] = i
+                mapOfIndexOpen[i] = indexOpen
+                indexOpen += 1
+                indexClose = indexOpen
+            }
+            ']' -> {
+                indexClose -= 1
+                if (indexClose < 0) throw argError
+                while (closeList[indexClose] != 0) {
+                    indexClose -= 1
+                    if (indexClose < 0) throw argError
+                }
+                closeList[indexClose] = i
+            }
+            else -> continue
+        }
+    }
+    val result = mutableListOf<Int>()
+    for (i in 0 until cells)
+        result.add(0)
+    var dataIndex = cells / 2
+    var commandsCount = 0
+    var i = 0
+    var periodIndex: Int
+    fun period(commands: String, limit: Int, starIndex: Int, lastIndex: Int, currentPeriodIndex: Int): List<Int> {
+        while (i <= lastIndex && commandsCount < limit)
+            when (commands[i]) {
+                '[' -> {
+                    periodIndex = mapOfIndexOpen[i] ?: -1
+                    if (result[dataIndex] == 0)
+                        i = closeList[periodIndex] + 1
+                    else {
+                        i += 1
+                        commandsCount += 1
+                        period(commands, limit, openList[periodIndex], closeList[periodIndex], periodIndex)
+                    }
+                }
+                ']' -> {
+                    commandsCount += 1
+                    i = if (result[dataIndex] != 0)
+                        openList[currentPeriodIndex] + 1
+                    else i + 1
+                }
+                else -> {
+                    when (commands[i]) {
+                        '+' -> result[dataIndex] += 1
+                        '-' -> result[dataIndex] -= 1
+                        '>' -> {
+                            dataIndex += 1
+                            if (dataIndex == cells) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
+                        }
+                        '<' -> {
+                            dataIndex -= 1
+                            if (dataIndex < 0) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
+                        }
+                    }
+                    i += 1
+                    commandsCount += 1
+                }
+            }
+        return result
+    }
+    return period(commands, limit, 0, commands.length - 1, 0)
+}
