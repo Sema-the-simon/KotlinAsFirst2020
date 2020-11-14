@@ -4,8 +4,6 @@ package lesson6.task1
 
 import lesson2.task2.daysInMonth
 import java.lang.IllegalArgumentException
-import kotlin.math.pow
-
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -184,26 +182,21 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    val analysingString = expression.split(" ")
     val error = IllegalArgumentException("For input string: $expression")
-    if (analysingString.size % 2 != 1 || expression.isEmpty()) throw error
-    try {
-        var result = if (analysingString[0][0].isDigit()) analysingString[0].toInt()
-        else throw error
-        for (i in 1 until analysingString.size step 2) {
-            val currentNumber = if (analysingString[i + 1][0].isDigit()) analysingString[i + 1].toInt()
-            else throw error
-            when (analysingString[i]) {
-                "+" -> result += currentNumber
-                "-" -> result -= currentNumber
-                else -> throw error
-
-            }
+    val patternString = Regex("[0-9]+( [-+] [0-9]+)*").find("$expression ", 0)?.value
+    if (expression != patternString) throw error
+    val analysingString = expression.split(" ")
+    var result = if (analysingString[0][0] == '0' && analysingString[0].length > 1) throw error
+    else analysingString[0].toInt()
+    for (i in 1 until analysingString.size step 2) {
+        val currentNumber = if (analysingString[i + 1][0] == '0' && analysingString[i].length > 1) throw error
+        else analysingString[i + 1].toInt()
+        when (analysingString[i]) {
+            "+" -> result += currentNumber
+            else -> result -= currentNumber
         }
-        return result
-    } catch (e: NumberFormatException) {
-        throw IllegalArgumentException("For input string: $expression")
     }
+    return result
 }
 
 /**
@@ -273,67 +266,33 @@ fun mostExpensive(description: String): String {
         "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
         "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
         "M", "MM", "MMM"
+        MCMLXXVIII = 1978
+        DCXCIV = 694
+        XLIX = 49
 */
 fun fromRoman(roman: String): Int {
-    if (roman.isEmpty()) return -1
-    val dicUnits = listOf('I', 'X', 'C', 'M')
-    val dicFives = listOf('V', 'L', 'D')
-    var result = 0
-    var minIndex = 4
-    var newNumber = 0
-    var previousIndex = 0
-    for (currentChar in roman) {
-        val currentIndex = when (currentChar) {
-            in dicUnits -> dicUnits.indexOf(currentChar)
-            in dicFives -> dicFives.indexOf(currentChar)
-            else -> return -1
-        }
+    val dictionary = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+    val patternString = Regex("[IVXLCDM]+").find("$roman ", 0)?.value
+    if (roman != patternString) return -1
+    var previousDigit = dictionary[roman[0]] ?: return -1
+    var result = previousDigit
+    var repeatCount = 1
+    var minDigit = previousDigit
+    for (i in 1 until roman.length) {
+        val currentDigit = dictionary[roman[i]] ?: return -1
+        repeatCount = if (currentDigit == previousDigit) repeatCount + 1
+        else 1
         when {
-            newNumber == 0 && currentIndex == 3 -> {
-                result += 1000
-                minIndex = currentIndex
+            currentDigit <= minDigit && repeatCount < 4 -> {
+                result += currentDigit
+                minDigit = currentDigit
             }
-            newNumber == 0 && currentIndex < minIndex -> {
-                previousIndex = currentIndex
-                if (currentChar in dicUnits) {
-                    newNumber += 1
-                    result += 10.0.pow(currentIndex).toInt()
-                } else {
-                    result += 5 * 10.0.pow(currentIndex).toInt()
-                }
-            }
-            newNumber != 0 && currentIndex <= minIndex -> {
-                when (currentIndex) {
-                    previousIndex + 1 -> {
-                        result += 8 * 10.0.pow(previousIndex).toInt()
-                        minIndex = previousIndex
-                        newNumber = 0
-                    }
-                    previousIndex -> {
-                        minIndex = previousIndex
-                        if (currentChar in dicUnits) {
-                            result += 10.0.pow(currentIndex).toInt()
-                            if (newNumber < 2) newNumber += 1
-                            else newNumber = 0
-                        } else {
-                            result += 3 * 10.0.pow(currentIndex).toInt()
-                            newNumber = 0
-                        }
-                    }
-                    else -> {
-                        previousIndex = currentIndex
-                        if (currentChar in dicUnits) {
-                            newNumber = 1
-                            result += 10.0.pow(currentIndex).toInt()
-                        } else {
-                            newNumber = 0
-                            result += 5 * 10.0.pow(currentIndex).toInt()
-                        }
-                    }
-                }
-            }
+            currentDigit - previousDigit < 10 * previousDigit && repeatCount < 4 ->
+                result = result + currentDigit - 2 * previousDigit
             else -> return -1
         }
+        previousDigit = currentDigit
+
     }
     return result
 }
