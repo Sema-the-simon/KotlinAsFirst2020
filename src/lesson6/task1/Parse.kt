@@ -346,10 +346,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         when (commands[i]) {
             '[' -> {
                 openList[indexOpen] = i
-                indexClose = indexOpen
                 indexOpen++
+                indexClose = indexOpen
             }
             ']' -> {
+                indexClose--
+                if (indexClose < 0) throw argError
                 while (closeList[indexClose] != 0) {
                     indexClose--
                     if (indexClose < 0) throw argError
