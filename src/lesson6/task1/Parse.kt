@@ -126,8 +126,7 @@ fun dateDigitToStr(digital: String): String = TODO()
  */
 fun flattenPhoneNumber(phone: String): String {
     val analysingString = phone.filterNot { it in setOf(' ', '-') }
-    val patternString = Regex("^(\\+[0-9]+)?(\\([0-9]+\\))?[0-9]*").find(analysingString, 0)?.value
-    return if (patternString != analysingString) ""
+    return if (!Regex("^(\\+[0-9]+)?(\\([0-9]+\\))?[0-9]*").matches(analysingString)) ""
     else analysingString.filterNot { it in setOf('(', ')') }
 }
 
@@ -157,8 +156,7 @@ fun bestLongJump(jumps: String): Int = TODO()
 fun bestHighJump(jumps: String): Int {
     val analysingString = jumps.split(" ")
     var maxHeight = -1
-    val patternString = Regex("([1-9][0-9]* [+%-]+ )+").find("$jumps ", 0)?.value
-    if (patternString != "$jumps ") return -1
+    if (!Regex("([1-9][0-9]* [+%-]+ )+").matches("$jumps ")) return -1
     for (i in 0..analysingString.size - 2 step 2) {
         val height = analysingString[i].toInt()
         val stringOfAttempts = analysingString[i + 1]
@@ -183,8 +181,7 @@ fun bestHighJump(jumps: String): Int {
  */
 fun plusMinus(expression: String): Int {
     val error = IllegalArgumentException("For input string: $expression")
-    val patternString = Regex("[0-9]+( [-+] [0-9]+)*").find("$expression ", 0)?.value
-    if (expression != patternString) throw error
+    if (!Regex("[0-9]+( [-+] [0-9]+)*").matches(expression)) throw error
     val analysingString = expression.split(" ")
     var result = if (analysingString[0][0] == '0' && analysingString[0].length > 1) throw error
     else analysingString[0].toInt()
@@ -272,8 +269,7 @@ fun mostExpensive(description: String): String {
 */
 fun fromRoman(roman: String): Int {
     val dictionary = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
-    val patternString = Regex("[IVXLCDM]+").find("$roman ", 0)?.value
-    if (roman != patternString) return -1
+    if (!Regex("[IVXLCDM]+").matches(roman)) return -1
     var previousDigit = dictionary[roman[0]] ?: return -1
     var result = previousDigit
     var repeatCount = 1
@@ -337,11 +333,10 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val argError = IllegalArgumentException("For input String: $commands")
     if (Regex("[^+\\[\\]\\-<> ]").find(commands)?.value != null) // если присутствуют символы отличные от заданных -> исключение
         throw argError
-    val openList = mutableListOf<Int>()
+    val openList = mutableListOf<Int>() // индексы будут соответствовать номеру пары скобочек
     val closeList = mutableListOf<Int>()
     var indexClose = 0
     var indexOpen = 0
-    val mapOfIndexOpen = mutableMapOf<Int, Int>()
     if (commands.filter { it == '[' }.length != commands.filter { it == ']' }.length) throw argError
     for (i in commands.filter { it == '[' }.indices) {
         openList.add(0)
@@ -351,15 +346,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         when (commands[i]) {
             '[' -> {
                 openList[indexOpen] = i
-                mapOfIndexOpen[i] = indexOpen
-                indexOpen += 1
                 indexClose = indexOpen
+                indexOpen++
             }
             ']' -> {
-                indexClose -= 1
-                if (indexClose < 0) throw argError
                 while (closeList[indexClose] != 0) {
-                    indexClose -= 1
+                    indexClose--
                     if (indexClose < 0) throw argError
                 }
                 closeList[indexClose] = i
@@ -373,44 +365,45 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var dataIndex = cells / 2
     var commandsCount = 0
     var i = 0
-    var periodIndex: Int
-    fun period(commands: String, limit: Int, starIndex: Int, lastIndex: Int, currentPeriodIndex: Int): List<Int> {
+    var periodIndex = -1 //  переменная показывающая на какой паре скобочек по счеты мы находимся сейчас
+    fun period(startIndex: Int, lastIndex: Int, currentPeriodIndex: Int): List<Int> {
         while (i <= lastIndex && commandsCount < limit)
             when (commands[i]) {
                 '[' -> {
-                    periodIndex = mapOfIndexOpen[i] ?: -1
+                    periodIndex++
+                    commandsCount++
                     if (result[dataIndex] == 0)
                         i = closeList[periodIndex] + 1
                     else {
-                        i += 1
-                        commandsCount += 1
-                        period(commands, limit, openList[periodIndex], closeList[periodIndex], periodIndex)
+                        i++
+                        period(i - 1, closeList[periodIndex], periodIndex)
                     }
                 }
                 ']' -> {
-                    commandsCount += 1
-                    i = if (result[dataIndex] != 0)
-                        openList[currentPeriodIndex] + 1
-                    else i + 1
+                    commandsCount++
+                    if (result[dataIndex] != 0) {
+                        i = startIndex + 1
+                        periodIndex = currentPeriodIndex
+                    } else i++
                 }
                 else -> {
                     when (commands[i]) {
-                        '+' -> result[dataIndex] += 1
-                        '-' -> result[dataIndex] -= 1
+                        '+' -> result[dataIndex]++
+                        '-' -> result[dataIndex]--
                         '>' -> {
-                            dataIndex += 1
+                            dataIndex++
                             if (dataIndex == cells) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
                         }
                         '<' -> {
-                            dataIndex -= 1
+                            dataIndex--
                             if (dataIndex < 0) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
                         }
                     }
-                    i += 1
-                    commandsCount += 1
+                    i++
+                    commandsCount++
                 }
             }
         return result
     }
-    return period(commands, limit, 0, commands.length - 1, 0)
+    return period(0, commands.length - 1, 0)
 }
