@@ -337,6 +337,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val closeList = mutableListOf<Int>()
     var indexClose = 0
     var indexOpen = 0
+    val mapOfOpen = mutableMapOf<Int, Int>()
     if (commands.filter { it == '[' }.length != commands.filter { it == ']' }.length) throw argError
     for (i in commands.filter { it == '[' }.indices) {
         openList.add(0)
@@ -346,6 +347,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         when (commands[i]) {
             '[' -> {
                 openList[indexOpen] = i
+                mapOfOpen[i] = indexOpen
                 indexOpen++
                 indexClose = indexOpen
             }
@@ -367,12 +369,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var dataIndex = cells / 2
     var commandsCount = 0
     var i = 0
-    var periodIndex = -1 //  переменная показывающая на какой паре скобочек по счеты мы находимся сейчас
+    var periodIndex: Int //  переменная показывающая на какой паре скобочек по счеты мы находимся сейчас
     fun period(startIndex: Int, lastIndex: Int, currentPeriodIndex: Int): List<Int> {
         while (i <= lastIndex && commandsCount < limit)
             when (commands[i]) {
                 '[' -> {
-                    periodIndex++
+                    periodIndex = mapOfOpen[i]!!
                     commandsCount++
                     if (result[dataIndex] == 0)
                         i = closeList[periodIndex] + 1
@@ -383,10 +385,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 }
                 ']' -> {
                     commandsCount++
-                    if (result[dataIndex] != 0) {
+                    if (result[dataIndex] != 0)
                         i = startIndex + 1
-                        periodIndex = currentPeriodIndex
-                    } else i++
+                    else i++
                 }
                 else -> {
                     when (commands[i]) {
