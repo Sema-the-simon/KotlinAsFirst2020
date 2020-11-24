@@ -83,7 +83,7 @@ fun dateStrToDigit(str: String): String {
         "мая" to 5, "июня" to 6, "июля" to 7, "августа" to 8,
         "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12
     )
-    if (!Regex("[1-9][0-9]? [а-я]+ [1-9][0-9]*").matches(str)) return ""
+    if (!Regex("[0-9][0-9]? [а-я]+ [1-9][0-9]*").matches(str)) return ""
     val parts = str.split(" ")
     val days = parts[0].toInt()
     val month = dictionary[parts[1]] ?: return ""
@@ -234,7 +234,7 @@ fun mostExpensive(description: String): String {
     for (i in 1..analysingString.size step 2) {
         val product = analysingString[i - 1]
         val price =
-            if (Regex("(?<!0)([1-9][0-9]*|0)(\\.[0-9])?").matches(analysingString[i])) analysingString[i].toDouble()
+            if (Regex("(?<!0)([1-9][0-9]*|0)(\\.[0-9]+)?").matches(analysingString[i])) analysingString[i].toDouble()
             else return ""
         if (price > result.second) result = product to price
     }
