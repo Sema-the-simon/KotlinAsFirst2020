@@ -83,18 +83,13 @@ fun dateStrToDigit(str: String): String {
         "мая" to 5, "июня" to 6, "июля" to 7, "августа" to 8,
         "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12
     )
+    if (!Regex("[1-9][0-9]? [а-я]+ [1-9][0-9]*").matches(str)) return ""
     val parts = str.split(" ")
-    return try {
-        if (parts.size != 3) throw NumberFormatException("For input string: $str")
-        val days = parts[0].toInt()
-        val month = dictionary[parts[1]] ?: throw NumberFormatException("For input string: ${parts[1]}")
-        val year = parts[2].toInt()
-        if (days > daysInMonth(month, year)) throw NumberFormatException("For input string: $days")
-        String.format("%02d.%02d.%01d", days, month, year)
-    } catch (e: NumberFormatException) {
-        ""
-    }
-
+    val days = parts[0].toInt()
+    val month = dictionary[parts[1]] ?: return ""
+    val year = parts[2].toInt()
+    if (days > daysInMonth(month, year)) return ""
+    return String.format("%02d.%02d.%01d", days, month, year)
 }
 
 
@@ -126,7 +121,7 @@ fun dateDigitToStr(digital: String): String = TODO()
  */
 fun flattenPhoneNumber(phone: String): String {
     val analysingString = phone.filterNot { it in setOf(' ', '-') }
-    return if (!Regex("^(\\+[0-9]+)?(\\([0-9]+\\))?[0-9]*").matches(analysingString)) ""
+    return if (!Regex("^(\\+[0-9]+)?(\\([0-9]+\\))?[0-9]*$").matches(analysingString)) ""
     else analysingString.filterNot { it in setOf('(', ')') }
 }
 
@@ -162,7 +157,10 @@ fun bestHighJump(jumps: String): Int {
         val stringOfAttempts = analysingString[i + 1]
         for (attempt in stringOfAttempts) {
             when (attempt) {
-                '+' -> if (height > maxHeight) maxHeight = height
+                '+' -> if (height > maxHeight) {
+                    maxHeight = height
+                    break
+                }
                 else -> continue
             }
         }
@@ -179,15 +177,15 @@ fun bestHighJump(jumps: String): Int {
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
+fun illegalArgument(inputString: String): Nothing = throw IllegalArgumentException("For input string: $inputString")
 fun plusMinus(expression: String): Int {
-    val error = IllegalArgumentException("For input string: $expression")
-    if (!Regex("[0-9]+( [-+] [0-9]+)*").matches(expression)) throw error
+    if (!Regex("(((?<!0)[1-9][0-9]*)|0)( [+\\-] (((?<!0)[1-9][0-9]*)|0))*").matches(expression)) illegalArgument(
+        expression
+    )
     val analysingString = expression.split(" ")
-    var result = if (analysingString[0][0] == '0' && analysingString[0].length > 1) throw error
-    else analysingString[0].toInt()
+    var result = analysingString[0].toInt()
     for (i in 1 until analysingString.size step 2) {
-        val currentNumber = if (analysingString[i + 1][0] == '0' && analysingString[i].length > 1) throw error
-        else analysingString[i + 1].toInt()
+        val currentNumber = analysingString[i + 1].toInt()
         when (analysingString[i]) {
             "+" -> result += currentNumber
             else -> result -= currentNumber
@@ -208,11 +206,11 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val analysingString = str.split(" ")
     var previousWord = analysingString[0].toLowerCase()
-    var currentlenght = previousWord.length
+    var currentLength = previousWord.length
     for (i in 1 until analysingString.size) {
         val currentWord = analysingString[i].toLowerCase()
-        if (currentWord == previousWord) return currentlenght + i - 1 - previousWord.length
-        currentlenght += currentWord.length
+        if (currentWord == previousWord) return currentLength + i - 1 - previousWord.length
+        currentLength += currentWord.length
         previousWord = currentWord
     }
     return -1
@@ -232,19 +230,15 @@ fun firstDuplicateIndex(str: String): Int {
 fun mostExpensive(description: String): String {
     val analysingString = description.split("; ", " ")
     var result = "" to -1.0
-    val error = NumberFormatException("For input string: $description")
-    return try {
-        if (analysingString.size % 2 != 0) throw error
-        for (i in 1..analysingString.size step 2) {
-            val product = analysingString[i - 1]
-            val price = analysingString[i].toDouble()
-            if (price < 0) throw error
-            if (price > result.second) result = product to price
-        }
-        result.first
-    } catch (e: NumberFormatException) {
-        ""
+    if (analysingString.size % 2 != 0) return ""
+    for (i in 1..analysingString.size step 2) {
+        val product = analysingString[i - 1]
+        val price =
+            if (Regex("(?<!0)([1-9][0-9]*|0)(\\.[0-9])?").matches(analysingString[i])) analysingString[i].toDouble()
+            else return ""
+        if (price > result.second) result = product to price
     }
+    return result.first
 }
 
 /**
@@ -330,33 +324,27 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    val argError = IllegalArgumentException("For input String: $commands")
     if (Regex("[^+\\[\\]\\-<> ]").find(commands)?.value != null) // если присутствуют символы отличные от заданных -> исключение
-        throw argError
-    val openList = mutableListOf<Int>() // индексы будут соответствовать номеру пары скобочек
-    val closeList = mutableListOf<Int>()
+        throw illegalArgument(commands)
+    val closeList = mutableListOf<Int>() // индексы будут соответствовать номеру пары скобочек
     var indexClose = 0
     var indexOpen = 0
     val mapOfOpen = mutableMapOf<Int, Int>()
-    if (commands.filter { it == '[' }.length != commands.filter { it == ']' }.length) throw argError
-    for (i in commands.filter { it == '[' }.indices) {
-        openList.add(0)
-        closeList.add(0)
-    }
+    if (commands.filter { it == '[' }.length != commands.filter { it == ']' }.length) throw illegalArgument(commands)
+    for (i in commands.filter { it == '[' }.indices) closeList.add(0)
     for (i in commands.indices) {
         when (commands[i]) {
             '[' -> {
-                openList[indexOpen] = i
                 mapOfOpen[i] = indexOpen
                 indexOpen++
                 indexClose = indexOpen
             }
             ']' -> {
                 indexClose--
-                if (indexClose < 0) throw argError
+                if (indexClose < 0) illegalArgument(commands)
                 while (closeList[indexClose] != 0) {
                     indexClose--
-                    if (indexClose < 0) throw argError
+                    if (indexClose < 0) illegalArgument(commands)
                 }
                 closeList[indexClose] = i
             }
@@ -369,44 +357,42 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var dataIndex = cells / 2
     var commandsCount = 0
     var i = 0
-    var periodIndex: Int //  переменная показывающая на какой паре скобочек по счеты мы находимся сейчас
-    fun period(startIndex: Int, lastIndex: Int, currentPeriodIndex: Int): List<Int> {
-        while (i <= lastIndex && commandsCount < limit)
-            when (commands[i]) {
-                '[' -> {
-                    periodIndex = mapOfOpen[i]!!
-                    commandsCount++
-                    if (result[dataIndex] == 0)
-                        i = closeList[periodIndex] + 1
-                    else {
-                        i++
-                        period(i - 1, closeList[periodIndex], periodIndex)
-                    }
-                }
-                ']' -> {
-                    commandsCount++
-                    if (result[dataIndex] != 0)
-                        i = startIndex + 1
-                    else i++
-                }
-                else -> {
-                    when (commands[i]) {
-                        '+' -> result[dataIndex]++
-                        '-' -> result[dataIndex]--
-                        '>' -> {
-                            dataIndex++
-                            if (dataIndex == cells) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
-                        }
-                        '<' -> {
-                            dataIndex--
-                            if (dataIndex < 0) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
-                        }
-                    }
+    val stack = mutableListOf<Int>()
+    while (i < commands.length && commandsCount < limit) {
+        commandsCount++
+        when (commands[i]) {
+            '[' -> {
+                if (result[dataIndex] == 0)
+                    i = closeList[mapOfOpen[i]!!] + 1
+                else {
+                    stack.add(0, i)
                     i++
-                    commandsCount++
+
                 }
             }
-        return result
+            ']' -> {
+                if (result[dataIndex] != 0) i = stack[0] + 1
+                else {
+                    i++
+                    stack.removeAt(0)
+                }
+            }
+            else -> {
+                when (commands[i]) {
+                    '+' -> result[dataIndex]++
+                    '-' -> result[dataIndex]--
+                    '>' -> {
+                        dataIndex++
+                        if (dataIndex == cells) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
+                    }
+                    '<' -> {
+                        dataIndex--
+                        if (dataIndex < 0) throw IllegalStateException("Index: $dataIndex out of bounds of the conveyor")
+                    }
+                }
+                i++
+            }
+        }
     }
-    return period(0, commands.length - 1, 0)
+    return result
 }

@@ -63,16 +63,15 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    for (line in File(inputName).readLines()) {
-        if (line.isEmpty() || line[0] != '_') {
-            writer.write(line)
-            writer.newLine()
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            if (line.isEmpty() || line[0] != '_') {
+                it.write(line)
+                it.newLine()
+            }
         }
     }
-    writer.close()
 }
-
 
 /**
  * Средняя (14 баллов)
@@ -84,7 +83,7 @@ fun deleteMarked(inputName: String, outputName: String) {
  *
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    val analysingText = File(inputName).readLines().joinToString().toLowerCase()
+    val analysingText = File(inputName).readText().toLowerCase()
     val result = mutableMapOf<String, Int>()
     for (substring in substrings)
         result[substring] = substringInString(analysingText, substring.toLowerCase())
@@ -93,9 +92,10 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
 
 fun substringInString(string: String, substring: String): Int {
     var count = 0
-    for (i in 0..string.length - substring.length) {
-        if (string[i] != substring[0]) continue
-        if (string.substring(i, i + substring.length) == substring) count++
+    var i = string.indexOf(substring)
+    while (i != -1 && i < string.length) {
+        count++
+        i = string.indexOf(substring, i + 1)
     }
     return count
 }
