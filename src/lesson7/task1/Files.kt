@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.lang.StringBuilder
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -166,7 +167,37 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    val formatListOfLines = File(inputName).readLines().map { it.trim().replace(Regex("\\s"), " ") }
+    val maxLength = formatListOfLines.maxByOrNull { it.length }?.length
+    File(outputName).bufferedWriter().use { writer ->
+        if (maxLength != null) {
+            for (line in formatListOfLines) {
+                if (!line.matches(Regex("\\s+")) && line.isNotEmpty()) {
+                    when {
+                        line.length == maxLength -> writer.write(line)
+                        line.matches(Regex(" *[^\\s]+ *")) -> writer.write(line.trim())
+                        else -> {
+                            val analysingLine = line.split(" ")
+                            val lengthWithoutSpace = analysingLine.sumBy { it.length }
+                            val numberOfSpaceToPut = (maxLength - lengthWithoutSpace) / (analysingLine.size - 1)
+                            val separator = "".padStart(numberOfSpaceToPut, ' ')
+                            val currentLine = analysingLine.joinToString(separator)
+                            if (currentLine.length < maxLength) {
+                                var i = currentLine.indexOf(separator)
+                                val builder = StringBuilder(currentLine)
+                                while (builder.length < maxLength) {
+                                    builder.insert(i, ' ')
+                                    i = builder.indexOf(separator, i + 1 + numberOfSpaceToPut)
+                                }
+                                writer.write(builder.toString())
+                            } else writer.write(currentLine)
+                        }
+                    }
+                }
+                writer.newLine()
+            }
+        }
+    }
 }
 
 /**
