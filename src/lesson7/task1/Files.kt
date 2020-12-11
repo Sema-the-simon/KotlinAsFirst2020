@@ -533,10 +533,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             val lineNumber = if (dividend.toString().length > subtrahendStr.length) dividend.toString().length
             else subtrahendStr.length
             lines.delete(0, lines.lastIndex + 1).append("".padStart(lineNumber, '-'))
-            while (subtrahendStr.length < moduleStr.length + 1) {
-                subtrahendStr.insert(0, ' ')
-                lines.insert(0, ' ')
-            }
+            while (subtrahendStr.length < moduleStr.length + 1) subtrahendStr.insert(0, ' ')
+            while (lines.length < moduleStr.length + 1) lines.insert(0, ' ')
             module = dividend - subtrahend
             moduleStr.delete(0, moduleStr.lastIndex + 1)
             moduleStr.append(module)
