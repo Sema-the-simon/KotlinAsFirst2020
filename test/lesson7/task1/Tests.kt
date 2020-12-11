@@ -134,10 +134,14 @@ Basic, Ruby, Swift.
     @Test
     @Tag("20")
     fun alignFileByWidth() {
-        alignFileByWidth("input/width_in1.txt", "temp.txt")
-        assertFileContent(
-            "temp.txt",
-            """Простая
+
+        fun test(input: String, res: String) {
+            alignFileByWidth(input, "temp.txt")
+            assertFileContent("temp.txt", res)
+            File("temp.txt").delete()
+        }
+        test(
+            "input/width_in1.txt", """Простая
 
 Во       входном       файле       с       именем       inputName       содержится       некоторый      текст.
 Вывести   его  в  выходной  файл  с  именем  outputName,  выровняв  по  левому  и  правому  краю  относительно
@@ -156,6 +160,13 @@ Basic, Ruby, Swift.
 2)  Число  пробелов  между  более  левой  парой  соседних  слов  должно  быть  больше или равно числу пробелов
 между                более               правой               парой               соседних               слов."""
         )
+
+        test(
+            "input/width_in2.txt", """ьбя: ьбя ьбя ЬБЯ / ЬбЯ - ьбя
+ЬБЯ,    ЬБЯ   ба;   БА   ба:"""
+        )
+
+
         File("temp.txt").delete()
 
     }
@@ -375,6 +386,7 @@ Basic, Ruby, Swift.
               74070
              """
         )
+
 
     }
 

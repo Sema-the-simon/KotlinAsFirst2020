@@ -167,7 +167,7 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    val formatListOfLines = File(inputName).readLines().map { it.trim().replace(Regex("\\s"), " ") }
+    val formatListOfLines = File(inputName).readLines().map { it.trim().replace(Regex("\\s+"), " ") }
     val maxLength = formatListOfLines.maxByOrNull { it.length }?.length
     File(outputName).bufferedWriter().use { writer ->
         if (maxLength != null) {
@@ -513,7 +513,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val firstString = if (dividend.toString().length == subtrahend.toString().length) " $lhv | $rhv"
     else "$lhv | $rhv"
     val spaces = "".padStart(3 + listOfDigits.size, ' ')
-    val lines = StringBuilder("".padStart(subtrahend.toString().length + 1, '-'))
+    val lines = StringBuilder("".padStart(dividend.toString().length + 1, '-'))
     var module = dividend - subtrahend
     val moduleStr = StringBuilder(module.toString())
     while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
@@ -530,7 +530,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             dividend = module * 10 + digit
             subtrahend = dividend / rhv * rhv
             val subtrahendStr = StringBuilder("-$subtrahend")
-            lines.delete(0, lines.lastIndex + 1).append("".padStart(subtrahendStr.length, '-'))
+            val lineNumber = if (dividend.toString().length > subtrahendStr.length) dividend.toString().length
+            else subtrahendStr.length
+            lines.delete(0, lines.lastIndex + 1).append("".padStart(lineNumber, '-'))
             while (subtrahendStr.length < moduleStr.length + 1) {
                 subtrahendStr.insert(0, ' ')
                 lines.insert(0, ' ')
