@@ -178,8 +178,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                         line.matches(Regex(" *[^\\s]+ *")) -> writer.write(line.trim())
                         else -> {
                             val analysingLine = line.split(" ")
-                            val lengthWithoutSpace = analysingLine.sumBy { it.length }
-                            val numberOfSpaceToPut = (maxLength - lengthWithoutSpace) / (analysingLine.size - 1)
+                            val numberOfSpaceToPut = (maxLength - analysingLine.sumBy { it.length }) / (analysingLine.size - 1)
                             val separator = "".padStart(numberOfSpaceToPut, ' ')
                             val currentLine = analysingLine.joinToString(separator)
                             if (currentLine.length < maxLength) {
@@ -502,6 +501,51 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    var dividend = lhv
+    val listOfDigits = mutableListOf<Int>()
+    while (rhv * 10 < dividend) {
+        listOfDigits.add(0, dividend % 10)
+        dividend /= 10
+    }
+
+    var subtrahend = dividend / rhv * rhv
+    val firstString = if (dividend.toString().length == subtrahend.toString().length) " $lhv | $rhv"
+    else "$lhv | $rhv"
+    val spaces = "".padStart(3 + listOfDigits.size, ' ')
+    val lines = StringBuilder("".padStart(subtrahend.toString().length + 1, '-'))
+    var module = dividend - subtrahend
+    val moduleStr = StringBuilder(module.toString())
+    while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
+
+    File(outputName).bufferedWriter().use { it ->
+        it.write(firstString)
+        it.newLine()
+        it.write("-$subtrahend$spaces${lhv / rhv}")
+        it.newLine()
+        it.write(lines.toString())
+        it.newLine()
+        it.write(moduleStr.toString())
+        for (digit in listOfDigits) {
+            dividend = module * 10 + digit
+            subtrahend = dividend / rhv * rhv
+            val subtrahendStr = StringBuilder("-$subtrahend")
+            lines.delete(0, lines.lastIndex + 1).append("".padStart(subtrahendStr.length, '-'))
+            while (subtrahendStr.length < moduleStr.length + 1) {
+                subtrahendStr.insert(0, ' ')
+                lines.insert(0, ' ')
+            }
+            module = dividend - subtrahend
+            moduleStr.delete(0, moduleStr.lastIndex + 1)
+            moduleStr.append(module)
+            while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
+            it.write(digit.toString())
+            it.newLine()
+            it.write(subtrahendStr.toString())
+            it.newLine()
+            it.write(lines.toString())
+            it.newLine()
+            it.write(moduleStr.toString())
+        }
+    }
 }
 

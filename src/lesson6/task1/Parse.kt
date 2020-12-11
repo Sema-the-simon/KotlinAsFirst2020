@@ -396,3 +396,45 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     }
     return result
 }
+
+/** "000; 00:30; Москва"
+ * "258; 23:59; Москва"
+
+ * "978; 19:20; Новгород"
+
+ * “332; 06:52; Тверь"
+ * "42; 14:02; Москва"
+ * "25; 07:00; Москва"
+ * В примере в станцию "Москва" до 21:00 успевают отправиться 3
+
+ * поезда: 000, 25, 42
+ */
+// fun trainStation(schedule: List<String>, destination: String, deadline: String): List<String> {
+// val timeDeadline = timeFormat(deadline)
+// val map = mutableListOf<Pair<String, Int>>()
+// val result = mutableListOf<String>()
+// for (train in schedule) {
+// val components: List<String> = train.split(";\\s".toRegex())
+// if (components.size != 3) throw IllegalArgumentException("For String:$train")
+// val trainNumber = components[0]
+// if (trainNumber.contains(Regex("[^0-9]"))) throw IllegalArgumentException("For trainNumber: $trainNumber")
+// val time = timeFormat(components[1])
+// val stationName = components[2]
+// if (stationName.contains("[^ёЁа-яА-Яa-zA-Z]".toRegex())) throw IllegalArgumentException("For stationName: $stationName")
+// if (stationName == destination && time <= timeDeadline) map.add(trainNumber to time)
+// }
+// val sortedMap = map.sortedBy { it.second }
+// for (i in map.indices)
+// result.add(sortedMap[i].first)
+// return result
+// }
+//
+// fun timeFormat(time: String): Int {
+// val hoursAndMinutes = time.split(":")
+// if (hoursAndMinutes.size != 2 || time.matches("[^:0-9]".toRegex())) throw IllegalArgumentException("For time: $time")
+// val hours = hoursAndMinutes[0].toInt()
+// if (hours > 23) throw IllegalArgumentException("For time: $time")
+// val minutes = hoursAndMinutes[1].toInt()
+// if (minutes > 59) throw IllegalArgumentException("For time: $time")
+// return hours * 60 + minutes
+// }

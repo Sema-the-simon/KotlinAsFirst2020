@@ -165,4 +165,53 @@ class Tests {
         assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(10, "+>+>[+>", 3) }
         assertThrows(IllegalStateException::class.java) { computeDeviceCells(20, ">>>>>>>>>>>>>", 12) }
     }
+    /*@Test
+    fun trainStation() {
+        assertEquals(
+            listOf(
+                "000", "25", "42"
+            ), lesson6.task1.trainStation(
+                listOf(
+                    "000; 00:30; Москва", "258; 23:59; Москва", "978; 19:20; Новгород",
+                    "332; 06:52; Тверь", "42; 14:02; Москва", "25; 07:00; Москва"
+                ), "Москва", "21:00"
+            )
+        )
+        assertEquals(
+            listOf(
+                "000"
+            ), lesson6.task1.trainStation(
+                listOf(
+                    "000; 00:30; Москва", "258; 23:59; Москва", "978; 19:20; Новгород",
+                    "332; 06:52; Тверь", "42; 14:02; Москва", "25; 07:00; Москва"
+                ), "Москва", "1:00"
+            )
+        )
+        assertThrows(IllegalArgumentException::class.java)
+        {
+            lesson6.task1.trainStation(
+                listOf(
+                    "005; 00:30; Москва", "006; 23:59; Москва", "fgh; 19:20; Новгород"
+                ), "Москва", "21:00"
+            )
+        }
+        assertThrows(IllegalArgumentException::class.java)
+        {
+            lesson6.task1.trainStation(
+                listOf(
+                    "005; 00:30; Мос5454ва", "006; 23:59; Москва", "fgh; 19:20; Новгород"
+                ), "Москва", "21:00"
+            )
+        }
+        assertThrows(IllegalArgumentException::class.java)
+        {
+            lesson6.task1.trainStation(
+                listOf(
+                    "005; 00:30; Москва", "006; 23259; Москва", "fgh; 19:20; Новгород"
+                ), "Москва", "21:00"
+            )
+        }
+    }
+
+     */
 }
