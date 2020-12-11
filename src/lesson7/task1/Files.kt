@@ -178,7 +178,8 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                         line.matches(Regex(" *[^\\s]+ *")) -> writer.write(line.trim())
                         else -> {
                             val analysingLine = line.split(" ")
-                            val numberOfSpaceToPut = (maxLength - analysingLine.sumBy { it.length }) / (analysingLine.size - 1)
+                            val numberOfSpaceToPut =
+                                (maxLength - analysingLine.sumBy { it.length }) / (analysingLine.size - 1)
                             val separator = "".padStart(numberOfSpaceToPut, ' ')
                             val currentLine = analysingLine.joinToString(separator)
                             if (currentLine.length < maxLength) {
@@ -517,7 +518,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val moduleStr = StringBuilder(module.toString())
     while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
 
-    File(outputName).bufferedWriter().use { it ->
+    File(outputName).bufferedWriter().use {
         it.write(firstString)
         it.newLine()
         it.write("-$subtrahend$spaces${lhv / rhv}")
@@ -537,7 +538,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             module = dividend - subtrahend
             moduleStr.delete(0, moduleStr.lastIndex + 1)
             moduleStr.append(module)
-            while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
+            while (moduleStr.length < lines.length) moduleStr.insert(0, ' ')
             it.write(digit.toString())
             it.newLine()
             it.write(subtrahendStr.toString())
