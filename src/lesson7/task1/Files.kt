@@ -168,8 +168,9 @@ fun centerFile(inputName: String, outputName: String) {
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
     val formatListOfLines = File(inputName).readLines().map { it.trim().replace(Regex("\\s+"), " ") }
-    val maxLength = formatListOfLines.maxByOrNull { it.length }?.length ?: return
+    val maxLength = formatListOfLines.maxByOrNull { it.length }?.length
     File(outputName).bufferedWriter().use { writer ->
+        if (maxLength == null) return
         for (line in formatListOfLines) {
             if (line.isNotEmpty()) {
                 when {
@@ -506,18 +507,20 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         listOfDigits.add(0, dividend % 10)
         dividend /= 10
     }
-
     var subtrahend = dividend / rhv * rhv
+    val subtrahendStr = StringBuilder("-$subtrahend".padStart(dividend.toString().length))
     val firstString = if (dividend.toString().length == subtrahend.toString().length) " $lhv | $rhv"
     else "$lhv | $rhv"
     val spaces = " ".repeat(3 + listOfDigits.size)
-    val lines = StringBuilder("".padStart(dividend.toString().length + 1, '-'))
+    var lineNumber = if (dividend.toString().length > subtrahendStr.trim().length) dividend.toString().length
+    else subtrahendStr.trim().length
+    val lines = StringBuilder("-".repeat(lineNumber))
     var module = dividend - subtrahend
     val moduleStr = StringBuilder(module.toString().padStart(lines.length))
     File(outputName).bufferedWriter().use {
         it.write(firstString)
         it.newLine()
-        it.write("-$subtrahend$spaces${lhv / rhv}")
+        it.write("$subtrahendStr$spaces${lhv / rhv}")
         it.newLine()
         it.write(lines.toString())
         it.newLine()
@@ -525,8 +528,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         for (digit in listOfDigits) {
             dividend = module * 10 + digit
             subtrahend = dividend / rhv * rhv
-            val subtrahendStr = "-$subtrahend".padStart(moduleStr.length + 1)
-            val lineNumber = if (dividend.toString().length > subtrahendStr.trim().length) dividend.toString().length
+            subtrahendStr.delete(0, subtrahendStr.lastIndex + 1)
+            subtrahendStr.append("-$subtrahend".padStart(moduleStr.length + 1))
+            lineNumber = if (dividend.toString().length > subtrahendStr.trim().length) dividend.toString().length
             else subtrahendStr.trim().length
             lines.delete(0, lines.lastIndex + 1).append("-".repeat(lineNumber).padStart(moduleStr.length + 1))
             module = dividend - subtrahend
@@ -534,7 +538,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             moduleStr.append(module.toString().padStart(lines.length))
             it.write(digit.toString())
             it.newLine()
-            it.write(subtrahendStr)
+            it.write(subtrahendStr.toString())
             it.newLine()
             it.write(lines.toString())
             it.newLine()
