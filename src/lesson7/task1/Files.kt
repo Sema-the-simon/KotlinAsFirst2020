@@ -168,34 +168,32 @@ fun centerFile(inputName: String, outputName: String) {
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
     val formatListOfLines = File(inputName).readLines().map { it.trim().replace(Regex("\\s+"), " ") }
-    val maxLength = formatListOfLines.maxByOrNull { it.length }?.length
+    val maxLength = formatListOfLines.maxByOrNull { it.length }?.length ?: return
     File(outputName).bufferedWriter().use { writer ->
-        if (maxLength != null) {
-            for (line in formatListOfLines) {
-                if (!line.matches(Regex("\\s+")) && line.isNotEmpty()) {
-                    when {
-                        line.length == maxLength -> writer.write(line)
-                        line.matches(Regex(" *[^\\s]+ *")) -> writer.write(line.trim())
-                        else -> {
-                            val analysingLine = line.split(" ")
-                            val numberOfSpaceToPut =
-                                (maxLength - analysingLine.sumBy { it.length }) / (analysingLine.size - 1)
-                            val separator = "".padStart(numberOfSpaceToPut, ' ')
-                            val currentLine = analysingLine.joinToString(separator)
-                            if (currentLine.length < maxLength) {
-                                var i = currentLine.indexOf(separator)
-                                val builder = StringBuilder(currentLine)
-                                while (builder.length < maxLength) {
-                                    builder.insert(i, ' ')
-                                    i = builder.indexOf(separator, i + 1 + numberOfSpaceToPut)
-                                }
-                                writer.write(builder.toString())
-                            } else writer.write(currentLine)
-                        }
+        for (line in formatListOfLines) {
+            if (line.isNotEmpty()) {
+                when {
+                    line.length == maxLength -> writer.write(line)
+                    line.matches(Regex(" *[^\\s]+ *")) -> writer.write(line.trim())
+                    else -> {
+                        val analysingLine = line.split(" ")
+                        val numberOfSpaceToPut =
+                            (maxLength - analysingLine.sumBy { it.length }) / (analysingLine.size - 1)
+                        val separator = " ".repeat(numberOfSpaceToPut)
+                        val currentLine = analysingLine.joinToString(separator)
+                        if (currentLine.length < maxLength) {
+                            var i = currentLine.indexOf(separator)
+                            val builder = StringBuilder(currentLine)
+                            while (builder.length < maxLength) {
+                                builder.insert(i, ' ')
+                                i = builder.indexOf(separator, i + 1 + numberOfSpaceToPut)
+                            }
+                            writer.write(builder.toString())
+                        } else writer.write(currentLine)
                     }
                 }
-                writer.newLine()
             }
+            writer.newLine()
         }
     }
 }
@@ -512,12 +510,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var subtrahend = dividend / rhv * rhv
     val firstString = if (dividend.toString().length == subtrahend.toString().length) " $lhv | $rhv"
     else "$lhv | $rhv"
-    val spaces = "".padStart(3 + listOfDigits.size, ' ')
+    val spaces = " ".repeat(3 + listOfDigits.size)
     val lines = StringBuilder("".padStart(dividend.toString().length + 1, '-'))
     var module = dividend - subtrahend
-    val moduleStr = StringBuilder(module.toString())
-    while (moduleStr.length != lines.length) moduleStr.insert(0, ' ')
-
+    val moduleStr = StringBuilder(module.toString().padStart(lines.length))
     File(outputName).bufferedWriter().use {
         it.write(firstString)
         it.newLine()
@@ -529,19 +525,16 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         for (digit in listOfDigits) {
             dividend = module * 10 + digit
             subtrahend = dividend / rhv * rhv
-            val subtrahendStr = StringBuilder("-$subtrahend")
-            val lineNumber = if (dividend.toString().length > subtrahendStr.length) dividend.toString().length
-            else subtrahendStr.length
-            lines.delete(0, lines.lastIndex + 1).append("".padStart(lineNumber, '-'))
-            while (subtrahendStr.length < moduleStr.length + 1) subtrahendStr.insert(0, ' ')
-            while (lines.length < moduleStr.length + 1) lines.insert(0, ' ')
+            val subtrahendStr = "-$subtrahend".padStart(moduleStr.length + 1)
+            val lineNumber = if (dividend.toString().length > subtrahendStr.trim().length) dividend.toString().length
+            else subtrahendStr.trim().length
+            lines.delete(0, lines.lastIndex + 1).append("-".repeat(lineNumber).padStart(moduleStr.length + 1))
             module = dividend - subtrahend
             moduleStr.delete(0, moduleStr.lastIndex + 1)
-            moduleStr.append(module)
-            while (moduleStr.length < lines.length) moduleStr.insert(0, ' ')
+            moduleStr.append(module.toString().padStart(lines.length))
             it.write(digit.toString())
             it.newLine()
-            it.write(subtrahendStr.toString())
+            it.write(subtrahendStr)
             it.newLine()
             it.write(lines.toString())
             it.newLine()
